@@ -25,7 +25,7 @@
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        @if (User.IsInRole("Преподаватель")|| User.IsInRole("Администратор"))
+                        @if (User.IsInRole("Преподаватель")|| User.IsInRole("Администратор")) //Отображение разделов меню в зависимости от роли пользователя
                         {
                         <li class="nav-item">@Html.ActionLink("Аттестации", "Index", "Attestations", new { area = "" }, new { @class = "nav-link" })</li>
                         }

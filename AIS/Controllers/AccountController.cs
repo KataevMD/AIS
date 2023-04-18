@@ -32,10 +32,24 @@ namespace AIS.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            if (User.Identity.IsAuthenticated)
+            try
+            {
+
+                var ctx = Request.GetOwinContext();
+                var authenticationManager = ctx.Authentication;//Получение текущего менеджера аутентификации
+                authenticationManager.SignOut();// Очистка файлов куки и очистка данных авторизованного пользователя
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+            if (User.Identity.IsAuthenticated) 
             {
                 return Redirect("/Attestations/Index");
             }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -45,20 +59,18 @@ namespace AIS.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model)
+        public async Task<ActionResult> Login(LoginViewModel model) //Запрос на аутентификация пользователя
         {
             if (ModelState.IsValid)
             {
                 string hashPassword = Models.HashPassword.GetHashPAssword(model.Password);
-                var findUsers = dbConnection.Teachers.Where(t => t.Login == model.Login && t.Password == hashPassword).FirstOrDefault();
+                var findUsers = dbConnection.Teachers.Where(t => t.Login == model.Login && t.Password == hashPassword).FirstOrDefault(); //Поиск записи в БД по логину и паролю
                 if (findUsers != null)
                 {
-                    this.SignInUser(findUsers, false);
-                    return this.RedirectToLocal("/Attestations/Index");
+                    this.SignInUser(findUsers, true);
+                    return this.RedirectToLocal("/Attestations/Index"); //Перенеаправление авторизованного пользователя на страницу аттестаций
                 }
-                else { ModelState.AddModelError(string.Empty, "Invalid username or password."); }
-                //var loginAccount = dbConnection.Teachers
-                //return View(model);
+                else { ModelState.AddModelError(string.Empty, "Некорректные логин или пароль."); }
             }
             return this.View(model);
         }
@@ -69,15 +81,15 @@ namespace AIS.Controllers
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        public ActionResult LogOff() //Запрос на выход пользователя из системы
         {
             try
             {
 
                 var ctx = Request.GetOwinContext();
-                var authenticationManager = ctx.Authentication;
+                var authenticationManager = ctx.Authentication; //Получение текущего менеджера аутентификации
 
-                authenticationManager.SignOut();
+                authenticationManager.SignOut(); // Очистка файлов куки и очистка данных авторизованного пользователя
             }
             catch (Exception ex)
             {
@@ -88,27 +100,30 @@ namespace AIS.Controllers
             return this.RedirectToAction("Login", "Account");
         }
 
-        private void SignInUser(Teachers teacher, bool isPersistent)
+        private void SignInUser(Teachers teacher, bool isPersistent) //Авторизация пользователя на основе утверждений
         {
 
             var claims = new List<Claim>();
             try
             {
 
-                claims.Add(new Claim(ClaimTypes.Name, teacher.FirstName));
-                claims.Add(new Claim(ClaimTypes.NameIdentifier, teacher.IdTeachers.ToString()));
+                claims.Add(new Claim(ClaimTypes.Name, teacher.LastName +" "+ teacher.FirstName + " " + teacher.Patronymic, ClaimValueTypes.String)); //утверждение полного имени пользователя
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, teacher.IdTeachers.ToString(), ClaimValueTypes.String)); // утверждение уникального идентификатора пользователя
+                
                 if (teacher.Role != null)
                 {
-                    foreach (var role in teacher.Role)
+                    foreach (var role in teacher.Role) //перебор всех ролей пользователя
                     {
-                        claims.Add(new Claim(ClaimTypes.Role, role.Title, ClaimValueTypes.String));
+                        claims.Add(new Claim(ClaimTypes.Role, role.Title, ClaimValueTypes.String)); //утверждение ролей пользователя
                     }
                 }
-                var claimIdenties = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie);
+                var claimIdenties = new ClaimsIdentity(claims, DefaultAuthenticationTypes.ApplicationCookie); //Установка утверждений и типа аутентификации на основе куки
                 var ctx = Request.GetOwinContext();
                 var authenticationManager = ctx.Authentication;
 
-                authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, claimIdenties);
+                authenticationManager.SignIn(new AuthenticationProperties() { IsPersistent = isPersistent }, claimIdenties); // Установка утверждений в менеджер аутентификации
+                                                                                                                             // и назначение проверки подлинности данных пользователя
+                                                                                                                             // на протяжении нескольких запросов
 
             }
             catch (Exception ex)
@@ -116,34 +131,6 @@ namespace AIS.Controllers
                 throw ex;
             }
         }
-
-        //
-        // GET: /Account/ExternalLoginFailure
-        [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
-        }
-
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        if (_userManager != null)
-        //        {
-        //            _userManager.Dispose();
-        //            _userManager = null;
-        //        }
-
-        //        if (_signInManager != null)
-        //        {
-        //            _signInManager.Dispose();
-        //            _signInManager = null;
-        //        }
-        //    }
-
-        //    base.Dispose(disposing);
-        //}
 
         #region Вспомогательные приложения
         // Используется для защиты от XSRF-атак при добавлении внешних имен входа

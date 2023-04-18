@@ -21,9 +21,8 @@ namespace AIS.Controllers
     public class AttestationsController : Controller
     {
         private readonly AISEntities db = new AISEntities();
-
-        
-        public ActionResult Index(int? idTypeAttestation)
+       
+        public ActionResult Index(int? idTypeAttestation) //Открытие страницы со списокм аттестаций, с подгрузкой данных в соответсвии с должностью пользователя
         {
             IEnumerable<Attestation> attestations;
 
@@ -32,25 +31,26 @@ namespace AIS.Controllers
 
             var idCurentUser = Int32.Parse(User.Identity.GetUserId());
 
-            if (User.IsInRole("Администратор"))
+            if (User.IsInRole("Администратор")) //Если у пользователя задана роль администратора, то подгружается полный список аттестаций
             {
                 attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation);
                 
             }
-            else
+            else //если роль отличнаыя от администратора, то подгружаются только те аттестации, которые принадлежать текущему пользователю с ролью преподавателя
             {
                 attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser);
             }
 
-            if (idTypeAttestation != null && idTypeAttestation != 0)
+            if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
             {
                 attestations = attestations.Where(a => a.IdTypeAttestation == idTypeAttestation);
             }
             
 
-            AttestationListViewModel attestationListViewModel = new AttestationListViewModel 
+            AttestationListViewModel attestationListViewModel = new AttestationListViewModel
             {
-                Attestations = attestations, 
+                Attestations = attestations,
+                IdCurentUser = idCurentUser,
                 TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title") 
             };
 
@@ -58,7 +58,7 @@ namespace AIS.Controllers
         }
 
         // GET: Attestations
-        public ActionResult BlockAttestations(int? idAttestations)
+        public ActionResult BlockAttestations(int? idAttestations) //Запрос на завершение аттестации
         {
             var attestation = db.Attestation.Find(idAttestations);
             attestation.Сompleted = true;
@@ -70,7 +70,7 @@ namespace AIS.Controllers
 
 
         // GET: Attestations
-        public FileResult GetAttestationVedomost(int? idAttestations)
+        public FileResult GetAttestationVedomost(int? idAttestations) //Запрос на формирование ведомости за экзамен
         {
 
             var attestation = db.Attestation.Find(idAttestations);
@@ -78,12 +78,14 @@ namespace AIS.Controllers
             int count = vedomosti.Count;
 
 
-
+            //Проверка на содержание файла ведомости по текущему экзамену
             if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx")))
             {
                 System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"));
             }
 
+
+            //Словарь тегов, и значений, на которые будут заменены теги в шаблоне ведомости
             var items = new Dictionary<string, string>()
             {
                 {"<DISCIPLINE>", attestation.Discipline.Title},
@@ -102,11 +104,12 @@ namespace AIS.Controllers
                 wordApp = new Application();
 
                 object missing = Type.Missing;
-                object fileName = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен.docx");
+                object fileName = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен.docx"); //Путь к шаблону ведомости
 
                 wordDoc = wordApp.Documents.Open(ref fileName, ref missing, ref missing, ref missing); //открываем шаблон ведомости
 
-                foreach (var item in items)
+                foreach (var item in items) // Перебор всех тегов и значений словаря, с последующей
+                                            // заменой каждого тега на соответствующее для него значение текущей аттестации
                 {
                     Find find = wordApp.Selection.Find;
                     find.Text = item.Key;
@@ -122,9 +125,9 @@ namespace AIS.Controllers
 
                 }
 
-                wordTable = wordDoc.Tables[2];
+                wordTable = wordDoc.Tables[2]; //Обращение к таблице результатов студентов за экзамен
 
-                //заполняем ячейки таблицы
+                //заполняем ячейки таблицы результатами студентов за экзамен
                 for (int i = 2; i <= count + 1; i++)
                     for (int j = 1; j <= 5; j++)
                     {
@@ -133,8 +136,10 @@ namespace AIS.Controllers
                             wordTable.Cell(i, j).Range.Text = Convert.ToString(i - 1);
                         if (j == 3)
                             wordTable.Cell(i, j).Range.Text = Convert.ToString(v.Student.FirstName + " " + v.Student.LastName + " " + v.Student.Patronymic);
-                        //if (j == 4)
+                        
+                        //if (j == 4) //// код для последующей модернизации функции формирования ведомостей под различные типы аттестаций 
                         //    wordTable.Cell(i, j).Range.Text = Convert.ToString(v.TheNumberOfPointsForTheExam);
+
                         if (j == 4)
                         {
                             string finalGradeString = "";
@@ -150,12 +155,12 @@ namespace AIS.Controllers
                         }
                             
                     }
-
+                // имя нового файла ведомости
                 object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
 
-                wordDoc.SaveAs2(newFile);
-                wordApp.ActiveDocument.Close();
-                wordApp?.Quit();
+                wordDoc.SaveAs2(newFile); //сохранить заполненный данными шаблон как новый документ
+                wordApp.ActiveDocument.Close(); //закрытие активного документа
+                wordApp?.Quit(); //отключение от приложения для работы с документами типа Word
 
 
             }
@@ -164,18 +169,13 @@ namespace AIS.Controllers
                 wordApp?.Quit();
                 Console.WriteLine(ex.Message);
             }
-            //finally
-            //{
-            //    wordApp?.Quit();
-            //}
 
-
-            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
+            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"); //путь до сохраненной ранее ведомости
             string fileType = "application/word";
-            // Имя файла - необязательно
+            // Имя файла - необязательно. Это то имя файла, которое будет задано скачиваемому файлу
             string file_name = "Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx";
 
-            return File(path, fileType, file_name);
+            return File(path, fileType, file_name); //отправка на клиент файла ведомости
         }
 
         // GET: Attestations/Details/5
@@ -267,7 +267,7 @@ namespace AIS.Controllers
 
 
         // GET: Attestations/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id) // Запрос на удаление аттестации, открывает страницу с удалением аттестации
         {
             if (id == null)
             {
@@ -282,7 +282,7 @@ namespace AIS.Controllers
         }
 
         // POST: Attestations/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("Delete")] // Запрос на подтверждение удаления выбранной аттестации
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {

@@ -7,7 +7,7 @@ using System.Web;
 
 namespace AIS.Models
 {
-    public class HashPassword
+    public class HashPassword //Класс хеширования паролей
     {
         public static string GetHashPAssword(string Password)
         {

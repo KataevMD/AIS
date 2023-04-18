@@ -11,11 +11,10 @@
 <form method="get">
     <div class="form-inline">
         <label class="control-label">Тип аттестации: </label>
-        @Html.DropDownList("idTypeAttestation", Model.TypeAttestations as SelectList,
+        @Html.DropDownList("idTypeAttestation", Model.TypeAttestations as SelectList, //Выпадающий список для фильтрации по типам аттестаций
                     htmlAttributes: new { @class = "form-select" })
 
-
-        <input type="submit" value="Фильтр" class="btn btn-default" />
+        <input type="submit" value="Поиск" class="btn btn-outline-secondary btn-sm" />
     </div>
 </form>
 <hr />
@@ -74,9 +73,16 @@
             </td>
             <td>
                 @{
-                    if (item.Сompleted.Value)
+                    if (item.Сompleted.HasValue)
                     {
-                        <h>Да</h>
+                        if (item.Сompleted.Value)
+                        {
+                            <h>Да</h>
+                        }
+                        else
+                        {
+                            <h>Нет</h>
+                        }
                     }
                     else
                     {
@@ -85,7 +91,7 @@
                 }
             </td>
             @{
-                if (item.Сompleted != null && item.Сompleted == true)
+                if (item.Сompleted != null && item.Сompleted == true) //Если аттестация завершена, то выводится кнопка на формирование ведомости
                 {
                     <td />
                     <td>
@@ -95,9 +101,16 @@
                 }
                 else
                 {
-                    <td>
-                        @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
-                    </td>
+                    if (User.IsInRole("Преподаватель") && item.IdTeachers == Model.IdCurentUser) // Проверка на то, что начать аттестацию может только преподаватель, который закреплен за даннйо аттестацией
+                    {
+                        <td>
+                            @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
                     <td>
                         @Html.ActionLink("Редактировать", "Edit", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
                     </td>

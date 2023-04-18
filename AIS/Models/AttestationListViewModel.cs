@@ -10,6 +10,7 @@ namespace AIS.Models
     public class AttestationListViewModel
     {
         public IEnumerable<Attestation> Attestations { get; set; }
+        public int IdCurentUser { get; set; }
         public SelectList TypeAttestations { get; set; }
 
     }

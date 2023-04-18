@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace AIS.Models
 {
-    public class HomeController : Controller
+    public class HomeController : Controller //Контроллер для домашней страницы, которая впоследсвтии будет отображаться после авторизации
     {
         public ActionResult Index()
         {
