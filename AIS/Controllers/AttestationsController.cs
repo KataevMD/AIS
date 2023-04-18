@@ -76,9 +76,12 @@ namespace AIS.Controllers
             var attestation = db.Attestation.Find(idAttestations);
             var vedomosti = db.Vedomosti.Where(v => v.IdAttestation == idAttestations).ToList();
             int count = vedomosti.Count;
-            if (System.IO.File.Exists(Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx")))
+
+
+
+            if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx")))
             {
-                System.IO.File.Delete(Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"));
+                System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"));
             }
 
             var items = new Dictionary<string, string>()
@@ -88,7 +91,7 @@ namespace AIS.Controllers
                 {"<TITLEGROUP>", attestation.Group.Title},
                 {"<SPECIALITY>", attestation.Group.Speciality.Title},
                 {"<FIOPREP>", attestation.Teachers.LastName + " " + attestation.Teachers.FirstName+ " " + attestation.Teachers.Patronymic},
-                {"<DATE>", attestation.EndDate.ToString("dd MMMM yyyy")}
+                {"<DATE>", attestation.EndDate.ToString("«dd» MMMM yyyy")}
             };
 
             Application wordApp = null;
@@ -99,7 +102,7 @@ namespace AIS.Controllers
                 wordApp = new Application();
 
                 object missing = Type.Missing;
-                object fileName = Server.MapPath("~/FilesVedomosti/Ведомость экзамен.docx");
+                object fileName = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен.docx");
 
                 wordDoc = wordApp.Documents.Open(ref fileName, ref missing, ref missing, ref missing); //открываем шаблон ведомости
 
@@ -119,7 +122,7 @@ namespace AIS.Controllers
 
                 }
 
-                wordTable = wordDoc.Tables[1];
+                wordTable = wordDoc.Tables[2];
 
                 //заполняем ячейки таблицы
                 for (int i = 2; i <= count + 1; i++)
@@ -128,15 +131,27 @@ namespace AIS.Controllers
                         var v = vedomosti[i - 2];
                         if (j == 1)
                             wordTable.Cell(i, j).Range.Text = Convert.ToString(i - 1);
-                        if (j == 2)
-                            wordTable.Cell(i, j).Range.Text = Convert.ToString(v.Student.FirstName + " " + v.Student.LastName + " " + v.Student.Patronymic);
                         if (j == 3)
-                            wordTable.Cell(i, j).Range.Text = Convert.ToString(v.TheNumberOfPointsForTheExam);
+                            wordTable.Cell(i, j).Range.Text = Convert.ToString(v.Student.FirstName + " " + v.Student.LastName + " " + v.Student.Patronymic);
+                        //if (j == 4)
+                        //    wordTable.Cell(i, j).Range.Text = Convert.ToString(v.TheNumberOfPointsForTheExam);
                         if (j == 4)
-                            wordTable.Cell(i, j).Range.Text = Convert.ToString(v.FinalGrade);
+                        {
+                            string finalGradeString = "";
+                            if (v.FinalGrade == "5")
+                                finalGradeString = " (отлично)";
+                            if (v.FinalGrade == "4")
+                                finalGradeString = " (хорошо)";
+                            if (v.FinalGrade == "3")
+                                finalGradeString = " (удовл.)";
+                            if (v.FinalGrade == "2")
+                                finalGradeString = " (неудовл.)";
+                            wordTable.Cell(i, j).Range.Text = v.FinalGrade + finalGradeString;
+                        }
+                            
                     }
 
-                object newFile = Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
+                object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
 
                 wordDoc.SaveAs2(newFile);
                 wordApp.ActiveDocument.Close();
@@ -149,13 +164,13 @@ namespace AIS.Controllers
                 wordApp?.Quit();
                 Console.WriteLine(ex.Message);
             }
-            finally
-            {
-                wordApp?.Quit();
-            }
+            //finally
+            //{
+            //    wordApp?.Quit();
+            //}
 
 
-            string path = Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
+            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
             string fileType = "application/word";
             // Имя файла - необязательно
             string file_name = "Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx";
