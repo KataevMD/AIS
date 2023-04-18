@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f0677ff8833d450391f56bad8d9235f1" Name="Diagram1">
+        <EntityTypeShape EntityType="AISModel.Attestation" Width="1.5" PointX="5.25" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Criteria" Width="1.5" PointX="11.25" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Discipline" Width="1.5" PointX="3" PointY="9.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.DisciplineTeachers" Width="1.5" PointX="5.25" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Group" Width="1.5" PointX="3" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Role" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Speciality" Width="1.5" PointX="0.75" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.StatusStudent" Width="1.5" PointX="6" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.StatusTeacher" Width="1.5" PointX="0.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Student" Width="1.5" PointX="8.25" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.StudentResult" Width="1.5" PointX="13.5" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.sysdiagrams" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Teachers" Width="1.5" PointX="3" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.TypeAttestation" Width="1.5" PointX="3" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.Vedomosti" Width="1.5" PointX="10.5" PointY="6.25" IsExpanded="true" />
+        <AssociationConnector Association="AISModel.FK_Exam_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Exam_ProModule" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Exam_Teachers" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Exam_TypeCertification" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Vedomosti_Exam" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Criteria_ProModule" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_StudentResult_Criteria" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_DisciplineTeachers_Discipline" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_DisciplineTeachers_Teachers" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Group_Speciality" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Student_Group" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Teachers_Speciality" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Student_StatusStudent" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Teachers_StatusTeacher1" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_StudentResult_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.FK_Vedomosti_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="AISModel.UserRole" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

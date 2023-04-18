@@ -1,0 +1,80 @@
+﻿@model AIS.Entities.Attestation
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Attestation</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Сompleted)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Сompleted)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Group.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Group.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Discipline.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Discipline.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Teachers.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Teachers.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TypeAttestation.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TypeAttestation.Title)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

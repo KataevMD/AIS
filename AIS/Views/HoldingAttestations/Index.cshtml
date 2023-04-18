@@ -1,0 +1,141 @@
+﻿@using AIS.Models
+@using AIS.Entities
+@model AttestationStudentViewModel
+
+
+@{
+    ViewBag.Title = "HoldingAttestations";
+}
+
+<hr />
+<div class="row">
+    <p class="text-center">
+        <h class="fw-bold">Дисциплина:</h>
+        @Model.Attestations.Discipline.Title
+    </p>
+</div>
+
+<div class="row">
+    <p class="text-center">
+        <h class="fw-bold">Группа:</h>
+        @Model.Attestations.Group.Title
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div style="display: inline-block;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Студенты группы:</th>
+                    </tr>
+                </thead>
+
+                @foreach (Student std in Model.Students)
+                {
+                    <tr>
+                        <td>
+                            @using (@Ajax.BeginForm("GetStudent", new AjaxOptions { UpdateTargetId = "results" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input name="idStudent" value="@std.IdStudent" readonly hidden/>
+                                <input id="dis_@std.IdStudent" style="background: none; border: none; margin:0; padding:0;" type="submit" value="@std.FirstName @std.LastName @std.Patronymic" />
+                            }
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+    <div class="col-md-8" id="criteriaArea">
+        <div id="results"></div>
+        @using (@Ajax.BeginForm("SaveResult", new AjaxOptions { UpdateTargetId = "result", OnSuccess = "OnSuccess" }))
+        {
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center">Наименование</th>
+                        <th class="text-center">Описание</th>
+                        <th class="text-center">Процент снятия</th>
+                        <th class="text-center">Балл снятия</th>
+                        <th class="text-center">Максимальный балл</th>
+                        <th class="text-center">Принят?</th>
+                        <th class="text-center">Количество ошибок</th>
+                    </tr>
+                </thead>
+                <tbody id="criteriaList">
+                    @Html.AntiForgeryToken()
+                    @{ int i = 0;}
+                    @foreach (Criteria crt in Model.Criterias)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(model => crt.Title, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(model => crt.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="text-center align-middle">
+                                @{
+                                    if (String.IsNullOrEmpty(@crt.WithdrawPercent))
+                                    {
+                                        <h>-</h>
+                                    }
+                                    else
+                                    {
+                                        <h>@Html.DisplayFor(model => crt.WithdrawPercent, new { htmlAttributes = new { @class = "form-control" } }) %</h>
+                                    }
+
+
+
+                                }
+                            </td>
+                            <td class="text-center align-middle">
+                                @{
+                                    if (String.IsNullOrEmpty(@crt.RemoveAPoint))
+                                    {
+                                        <h>-</h>
+                                    }
+                                    else
+                                    {
+                                        <h>@Html.DisplayFor(model => crt.RemoveAPoint, new { htmlAttributes = new { @class = "form-control" } })</h>
+                                    }
+
+                                }
+                            </td>
+                            <td class="text-center align-middle">
+                                @Html.DisplayFor(model => crt.NumberOfPionts, new { htmlAttributes = new { @class = "form-control" } })
+                            </td>
+                            <td class="text-center align-middle">
+                                <input id="chekBox" class="form-check-input" type="checkbox" value="true" name="dataGets[@i].Accepted" />
+                            </td>
+                            <td class="text-center align-middle">
+                                @{ if (String.IsNullOrEmpty(@crt.RemoveAPoint) && String.IsNullOrEmpty(@crt.WithdrawPercent))
+                                    {
+                                        <input id="numberBox" min="0" readonly class="form-control" name="dataGets[@i].Point" type="number" />
+                                    }
+
+                                    else
+                                    {
+                                        <input id="numberBox" min="0" class="form-control" name="dataGets[@i].Point" type="number" />
+                                    }
+                                }
+                            </td>
+
+                        </tr>
+                        i++;
+                    }
+                    @{
+                        i = 0;
+                    }
+
+                </tbody>
+            </table>
+            <input id="saveResult" class="btn btn-outline-secondary" type="submit" value="Внести результаты студента" />
+        }
+        @Html.ActionLink("Завершить аттестацию", "BlockAttestations", "Attestations", new { idAttestations = Model.Attestations.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm", @hidden = "true", @id = "AttestationComplited" })
+    </div>
+</div>

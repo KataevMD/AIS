@@ -1,0 +1,113 @@
+﻿@using AIS.Models
+@model AttestationListViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+<hr />
+<p>
+    @Html.ActionLink("Добавить новую аттестацию", "Create", new { }, new { @class = "btn btn-secondary" })
+</p>
+<form method="get">
+    <div class="form-inline">
+        <label class="control-label">Тип аттестации: </label>
+        @Html.DropDownList("idTypeAttestation", Model.TypeAttestations as SelectList,
+                    htmlAttributes: new { @class = "form-select" })
+
+
+        <input type="submit" value="Фильтр" class="btn btn-default" />
+    </div>
+</form>
+<hr />
+<table class="table">
+    <tr>
+        <th class="text-center">
+            Дата начала
+        </th>
+        <th class="text-center">
+            Дата конца
+        </th>
+        <th class="text-center">
+            Группа
+        </th>
+        <th class="text-center">
+            Дисциплина
+        </th>
+        <th class="text-center">
+            Преподаватель
+        </th>
+        <th class="text-center">
+            Вид аттестации
+        </th>
+        <th class="text-center">
+            Завершен
+        </th>
+        <th class="text-center">
+        </th>
+        <th class="text-center">
+            Управление
+        </th>
+        <th class="text-center">
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Attestations)
+    {
+        <tr class="text-center">
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Group.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Discipline.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Teachers.LastName) @Html.DisplayFor(modelItem => item.Teachers.FirstName) @Html.DisplayFor(modelItem => item.Teachers.Patronymic)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TypeAttestation.Title)
+            </td>
+            <td>
+                @{
+                    if (item.Сompleted.Value)
+                    {
+                        <h>Да</h>
+                    }
+                    else
+                    {
+                        <h>Нет</h>
+                    }
+                }
+            </td>
+            @{
+                if (item.Сompleted != null && item.Сompleted == true)
+                {
+                    <td />
+                    <td>
+                        @Html.ActionLink("Сформировать ведомость", "GetAttestationVedomost", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                    <td />
+                }
+                else
+                {
+                    <td>
+                        @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                    <td>
+                        @Html.ActionLink("Редактировать", "Edit", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                    <td>
+                        @Html.ActionLink("Удалить", "Delete", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                }
+            }
+
+        </tr>
+    }
+
+</table>

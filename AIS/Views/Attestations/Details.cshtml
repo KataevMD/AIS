@@ -1,0 +1,66 @@
+﻿@model AIS.Entities.Attestation
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Attestation</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StartDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndDate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndDate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Group.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Group.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Discipline.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Discipline.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Teachers.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Teachers.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TypeAttestation.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TypeAttestation.Title)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IdAttestation }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
