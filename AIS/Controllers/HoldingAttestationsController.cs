@@ -187,7 +187,7 @@ namespace AIS.Controllers
             db.Vedomosti.Add(vedomosti);
             db.SaveChanges();
             int idStud = student.IdStudent;
-            studentList.RemoveAll(s => s.IdStudent == idStud); //Удаление стужента из списка проверки и выставления оценки
+            studentList.RemoveAll(s => s.IdStudent == idStud); //Удаление студента из списка проверки и выставления оценки
             vedomosti = null;
             student = null;
             studentResults = null;
