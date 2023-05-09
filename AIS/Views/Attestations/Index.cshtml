@@ -1,9 +1,12 @@
 ﻿@using AIS.Models
 @model AttestationListViewModel
 
+
 @{
     ViewBag.Title = "Index";
 }
+<!-- Модальное окно -->
+
 <hr />
 <p>
     @Html.ActionLink("Добавить новую аттестацию", "Create", new { }, new { @class = "btn btn-secondary" })
@@ -101,7 +104,7 @@
                 }
                 else
                 {
-                    if (User.IsInRole("Преподаватель") && item.IdTeachers == Model.IdCurentUser) // Проверка на то, что начать аттестацию может только преподаватель, который закреплен за даннйо аттестацией
+                    if (User.IsInRole("Преподаватель") && item.IdTeachers == Model.IdCurentUser) // Проверка на то, что начать аттестацию может только преподаватель, который закреплен за данной аттестацией
                     {
                         <td>
                             @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })

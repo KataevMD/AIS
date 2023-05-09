@@ -25,12 +25,21 @@
                 <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
 
-                        @if (User.IsInRole("Преподаватель")|| User.IsInRole("Администратор")) //Отображение разделов меню в зависимости от роли пользователя
+                        @if (User.IsInRole("Преподаватель")) //Отображение разделов меню в зависимости от роли пользователя
                         {
-                        <li class="nav-item">@Html.ActionLink("Аттестации", "Index", "Attestations", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li class="nav-item">@Html.ActionLink("Аттестации", "Index", "Attestations", new { area = "" }, new { @class = "nav-link" })</li>
                         }
-                        <li class="nav-item">@Html.ActionLink("Связаться", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-
+                        @if (User.IsInRole("Администратор")) //Отображение разделов меню в зависимости от роли пользователя
+                        {
+                            <li class="nav-item"><a class="nav-link">Администрирование</a></li>
+                        }
+                        @if (User.IsInRole("Заведующий отделением")) //Отображение разделов меню в зависимости от роли пользователя
+                        {
+                            <li class="nav-item">Что то для зав. отделения</li>
+                        }
+                        @if (!User.IsInRole("Администратор")) { 
+                            <li class="nav-item">@Html.ActionLink("Связаться", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                        }
 
                     </ul>
                     @Html.Partial("_LoginPartial")

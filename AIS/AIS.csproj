@@ -223,9 +223,6 @@
     <Compile Include="Entities\StudentResult.cs">
       <DependentUpon>AISModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Entities\sysdiagrams.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Entities\Teachers.cs">
       <DependentUpon>AISModel.tt</DependentUpon>
     </Compile>
@@ -240,6 +237,7 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\AttestationCriteriasViewModel.cs" />
     <Compile Include="Models\AttestationListViewModel.cs" />
     <Compile Include="Models\AttestationStudentViewModel.cs" />
     <Compile Include="Models\HashPassword.cs" />

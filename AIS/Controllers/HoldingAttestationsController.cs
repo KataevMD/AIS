@@ -48,7 +48,7 @@ namespace AIS.Controllers
             studentList = db.Student.Where(s => s.IdGroup == holdingAttestations.IdGroup && !db.Vedomosti.Select(v => v.IdStudent).Contains(s.IdStudent)).ToList(); // Получение списка студентов группы
                                                                                                                                                                     // проходящую текущую аттестацию
 
-            criterias = db.Criteria.Where(c => c.IdDiscipline == holdingAttestations.IdDiscipline).ToList(); // Получение списка криетриев по дисциплине по которой проводится аттестация 
+            criterias = db.Criteria.Where(c => c.IdAttestation == holdingAttestations.IdAttestation).ToList(); // Получение списка криетриев по аттестации
 
             decimal countPoint = 0;
             foreach (var crt in criterias) // Расчет общего количества баллов за все критерии дисциплины

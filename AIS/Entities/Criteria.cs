@@ -21,14 +21,14 @@ namespace AIS.Entities
         }
     
         public int IdCriteria { get; set; }
-        public int IdDiscipline { get; set; }
+        public int IdAttestation { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string NumberOfPionts { get; set; }
         public string WithdrawPercent { get; set; }
         public string RemoveAPoint { get; set; }
     
-        public virtual Discipline Discipline { get; set; }
+        public virtual Attestation Attestation { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentResult> StudentResult { get; set; }
     }

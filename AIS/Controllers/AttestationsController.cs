@@ -21,7 +21,7 @@ namespace AIS.Controllers
     public class AttestationsController : Controller
     {
         private readonly AISEntities db = new AISEntities();
-       
+
         public ActionResult Index(int? idTypeAttestation) //Открытие страницы со списокм аттестаций, с подгрузкой данных в соответсвии с должностью пользователя
         {
             IEnumerable<Attestation> attestations;
@@ -31,27 +31,26 @@ namespace AIS.Controllers
 
             var idCurentUser = Int32.Parse(User.Identity.GetUserId());
 
-            if (User.IsInRole("Администратор")) //Если у пользователя задана роль администратора, то подгружается полный список аттестаций
-            {
-                attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation);
-                
-            }
-            else //если роль отличнаыя от администратора, то подгружаются только те аттестации, которые принадлежать текущему пользователю с ролью преподавателя
-            {
+            //if (User.IsInRole("Администратор")) //Если у пользователя задана роль администратора, то подгружается полный список аттестаций
+            //{
+            //    attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation);
+
+            //}
+            //else //если роль отличнаыя от администратора, то подгружаются только те аттестации, которые принадлежать текущему пользователю с ролью преподавателя
+            //{
                 attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser);
-            }
+            //}
 
             if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
             {
                 attestations = attestations.Where(a => a.IdTypeAttestation == idTypeAttestation);
             }
-            
 
             AttestationListViewModel attestationListViewModel = new AttestationListViewModel
             {
                 Attestations = attestations,
                 IdCurentUser = idCurentUser,
-                TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title") 
+                TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title")
             };
 
             return View(attestationListViewModel);
@@ -136,7 +135,7 @@ namespace AIS.Controllers
                             wordTable.Cell(i, j).Range.Text = Convert.ToString(i - 1);
                         if (j == 3)
                             wordTable.Cell(i, j).Range.Text = Convert.ToString(v.Student.FirstName + " " + v.Student.LastName + " " + v.Student.Patronymic);
-                        
+
                         //if (j == 4) //// код для последующей модернизации функции формирования ведомостей под различные типы аттестаций 
                         //    wordTable.Cell(i, j).Range.Text = Convert.ToString(v.TheNumberOfPointsForTheExam);
 
@@ -153,7 +152,7 @@ namespace AIS.Controllers
                                 finalGradeString = " (неудовл.)";
                             wordTable.Cell(i, j).Range.Text = v.FinalGrade + finalGradeString;
                         }
-                            
+
                     }
                 // имя нового файла ведомости
                 object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
@@ -202,15 +201,35 @@ namespace AIS.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Attestation attestation = db.Attestation.Find(id);
+
+
             if (attestation == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.IdGroup = new SelectList(db.Group, "IdGroup", "Title", attestation.IdGroup);
-            ViewBag.IdDiscipline = new SelectList(db.Discipline, "IdDiscipline", "Title", attestation.IdDiscipline);
-            ViewBag.IdTeachers = new SelectList(db.Teachers, "IdTeachers", "LastName", attestation.IdTeachers);
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser);
+
+            var criteriasAttestaton = db.Criteria.Where(c => c.IdAttestation == attestation.IdAttestation);
+
+            var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
+            var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
+            var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline));
+
+            var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality);
+
+
+            AttestationCriteriasViewModel attestationCriteriasViewModel = new AttestationCriteriasViewModel
+            {
+                Attestations = attestation,
+                Criterias = criteriasAttestaton,
+                Disciplines = disciplineCurrentUser,
+                Groups = group
+            };
+
+            
             ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title", attestation.IdTypeAttestation);
-            return View(attestation);
+            return View(attestationCriteriasViewModel);
         }
 
         // POST: Attestations/Edit/5
@@ -222,6 +241,7 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 db.Entry(attestation).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -236,11 +256,22 @@ namespace AIS.Controllers
         // GET: Attestations/Create
         public ActionResult Create()
         {
-            ViewBag.IdGroup = new SelectList(db.Group, "IdGroup", "Title");
-            ViewBag.IdDiscipline = new SelectList(db.Discipline, "IdDiscipline", "Title");
-            ViewBag.IdTeachers = new SelectList(db.Teachers, "IdTeachers", "LastName");
+            // 
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser);
+
+            var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
+            var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
+            var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline));
+
+            var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality);
+
+            ViewBag.IdGroup = new SelectList(group, "IdGroup", "Title");
+            ViewBag.IdDiscipline = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title");
+            ViewBag.IdCurentUser = idCurentUser;
             ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title");
-            return View();
+            Attestation attestation = new Attestation();
+            return View(attestation);
         }
 
         // POST: Attestations/Create
@@ -257,10 +288,19 @@ namespace AIS.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.IdGroup = new SelectList(db.Group, "IdGroup", "Title", attestation.IdGroup);
-            ViewBag.IdDiscipline = new SelectList(db.Discipline, "IdDiscipline", "Title", attestation.IdDiscipline);
-            ViewBag.IdTeachers = new SelectList(db.Teachers, "IdTeachers", "LastName", attestation.IdTeachers);
-            ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title", attestation.IdTypeAttestation);
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser);
+
+            var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
+            var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
+            var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline));
+
+            var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality);
+
+            ViewBag.IdGroup = new SelectList(group, "IdGroup", "Title");
+            ViewBag.IdDiscipline = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title");
+            ViewBag.IdTeachers = idCurentUser;
+            ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title");
             return View(attestation);
         }
 

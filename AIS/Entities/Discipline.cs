@@ -18,7 +18,6 @@ namespace AIS.Entities
         public Discipline()
         {
             this.Attestation = new HashSet<Attestation>();
-            this.Criteria = new HashSet<Criteria>();
             this.DisciplineTeachers = new HashSet<DisciplineTeachers>();
         }
     
@@ -27,8 +26,6 @@ namespace AIS.Entities
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Attestation> Attestation { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Criteria> Criteria { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DisciplineTeachers> DisciplineTeachers { get; set; }
     }

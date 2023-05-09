@@ -1,4 +1,5 @@
-﻿@model AIS.Entities.Attestation
+﻿@using AIS.Models
+@model AttestationCriteriasViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -10,57 +11,80 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-
     <div class="form-horizontal">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.IdAttestation)
-
+        <input name="IdAttestation" value="@Model.Attestations.IdAttestation" readonly hidden />
         <div class="form-group">
-            @Html.LabelFor(model => model.IdDiscipline, "Дисциплина", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Attestations.IdDiscipline, "Дисциплина", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("IdDiscipline", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.IdDiscipline, "", new { @class = "text-danger" })
+
+                <select class="form-select" id="IdDiscipline" name="IdDiscipline">
+                    @foreach (var discipline in Model.Disciplines)
+                    {
+                        if (discipline.IdDiscipline == Model.Attestations.IdDiscipline)
+                        {
+                            <option selected="selected" value="@discipline.IdDiscipline">@discipline.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@discipline.IdDiscipline">@discipline.Title</option>
+                        }
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Attestations.IdDiscipline, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Attestations.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+
+                <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
+                       id="Attestations_StartDate"
+                       name="StartDate" type="date" value="@Model.Attestations.StartDate.ToString("yyyy-MM-dd")">
+                <span class="field-validation-valid text-danger" data-valmsg-for="Attestations.StartDate" data-valmsg-replace="true"></span>
+
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Attestations.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+                <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
+                       id="Attestations_EndDate"
+                       name="EndDate" type="date" value="@Model.Attestations.EndDate.ToString("yyyy-MM-dd")">
+                <span class="field-validation-valid text-danger" data-valmsg-for="Attestations.EndDate" data-valmsg-replace="true"></span>
+
+            </div>
+        </div>
+        <input name="IdTeachers" value="@Model.Attestations.IdTeachers" readonly hidden />
+        <div class="form-group">
+            @Html.LabelFor(model => model.Attestations.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+
+                <select class="form-select" id="IdGroup" name="IdGroup">
+                    @foreach (var group in Model.Groups)
+                    {
+                        if (group.IdGroup == Model.Attestations.IdGroup)
+                        {
+                            <option selected="selected" value="@group.IdGroup">@group.Title</option>
+                        }
+                        else
+                        {
+                            <option value="@group.IdGroup">@group.Title</option>
+                        }
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Attestations.IdGroup, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.IdTeachers, "Преподаватель", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Attestations.IdTypeAttestation, "Вид аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("IdTeachers", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.IdTeachers, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("IdGroup", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.IdGroup, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.IdTypeAttestation, "Вид аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("IdTypeAttestation", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.IdTypeAttestation, "", new { @class = "text-danger" })
+                @Html.DropDownList("IdTypeAttestation", null, htmlAttributes: new { @class = "form-select" })
+                @Html.ValidationMessageFor(model => model.Attestations.IdTypeAttestation, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -71,7 +95,63 @@
         </div>
     </div>
 }
+<p>
+    @Html.ActionLink("Добавить критерий", "Create", new { idAttestation = Model.Attestations.IdAttestation }, new { @class = "btn btn-secondary" })
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Наименование критерия
+        </th>
+        <th>
+            Описание
+        </th>
+        <th>
+            Балл за критерий
+        </th>
+        <th>
+            Процент снятия
+        </th>
+        <th>
+            Балл снятия
+        </th>
+        <th class="text-center">
+            Управление
+        </th>
+        <th class="text-center">
 
+        </th>
+
+    </tr>
+
+    @foreach (var item in Model.Criterias)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfPionts)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WithdrawPercent)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RemoveAPoint)
+            </td>
+            <td>
+                @Html.ActionLink("Редактировать", "Edit", new { id = item.IdCriteria }, new { @class = "btn btn-outline-secondary btn-sm" })
+            </td>
+            <td>
+                @Html.ActionLink("Удалить", "Delete", new { id = item.IdCriteria }, new { @class = "btn btn-outline-secondary btn-sm" })
+            </td>
+        </tr>
+    }
+
+</table>
 <div>
     @Html.ActionLink("Вернуться назад", "Index")
 </div>

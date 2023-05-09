@@ -18,6 +18,7 @@ namespace AIS.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Attestation()
         {
+            this.Criteria = new HashSet<Criteria>();
             this.Vedomosti = new HashSet<Vedomosti>();
         }
     
@@ -25,18 +26,22 @@ namespace AIS.Entities
         public int IdDiscipline { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата начала аттестации")]
         public System.DateTime StartDate { get; set; }
+
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd'/'MM'/'yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd.MM.yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name = "Дата конца аттестации")]
         public System.DateTime EndDate { get; set; }
+
         public int IdTeachers { get; set; }
         public int IdGroup { get; set; }
         public int IdTypeAttestation { get; set; }
         public Nullable<bool> Сompleted { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Criteria> Criteria { get; set; }
         public virtual Group Group { get; set; }
         public virtual Discipline Discipline { get; set; }
         public virtual Teachers Teachers { get; set; }

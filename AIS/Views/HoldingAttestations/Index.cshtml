@@ -39,7 +39,7 @@
                             @using (@Ajax.BeginForm("GetStudent", new AjaxOptions { UpdateTargetId = "results" }))
                             {
                                 @Html.AntiForgeryToken()
-                                <input name="idStudent" value="@std.IdStudent" readonly hidden/>
+                                <input name="idStudent" value="@std.IdStudent" readonly hidden />
                                 <input id="dis_@std.IdStudent" style="background: none; border: none; margin:0; padding:0;" type="submit" value="@std.FirstName @std.LastName @std.Patronymic" />
                             }
                         </td>
