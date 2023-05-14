@@ -12,6 +12,8 @@ namespace AIS.Models
         public IEnumerable<Attestation> Attestations { get; set; }
         public int IdCurentUser { get; set; }
         public SelectList TypeAttestations { get; set; }
+        public SelectList Groups { get; set; }
+        public SelectList Disciplines { get; set; }
 
     }
 }

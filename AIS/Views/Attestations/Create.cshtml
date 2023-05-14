@@ -47,14 +47,6 @@
 
     <input hidden readonly value="@ViewBag.IdCurentUser" id="IdTeachers" name="IdTeachers" />
 
-    @*<div class="form-group">
-            @Html.LabelFor(model => model.IdTeachers, "Преподаватель", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("IdTeachers", null, htmlAttributes: new { @class = "form-select" })
-                @Html.ValidationMessageFor(model => model.IdTeachers, "", new { @class = "text-danger" })
-            </div>
-        </div>*@
-
     <div class="form-group">
         @Html.LabelFor(model => model.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
@@ -70,16 +62,6 @@
             @Html.ValidationMessageFor(model => model.IdTypeAttestation, "", new { @class = "text-danger" })
         </div>
     </div>
-
-    @*<div class="form-group">
-            @Html.LabelFor(model => model.Сompleted, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Сompleted)
-                    @Html.ValidationMessageFor(model => model.Сompleted, "", new { @class = "text-danger" })
-                </div>
-            </div>
-        </div>*@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

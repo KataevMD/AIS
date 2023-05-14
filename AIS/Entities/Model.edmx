@@ -17,6 +17,7 @@
           <Property Name="IdGroup" Type="int" Nullable="false" />
           <Property Name="IdTypeAttestation" Type="int" Nullable="false" />
           <Property Name="Сompleted" Type="bit" />
+          <Property Name="Deleted" Type="bit" />
         </EntityType>
         <EntityType Name="Criteria">
           <Key>
@@ -54,6 +55,14 @@
           <Property Name="Title" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="CourseNumber" Type="nvarchar" MaxLength="1" />
           <Property Name="IdSpeciality" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProcedureForTransferringPoints">
+          <Key>
+            <PropertyRef Name="FinalGrade" />
+          </Key>
+          <Property Name="FinalGrade" Type="nvarchar" MaxLength="1" Nullable="false" />
+          <Property Name="MinPercents" Type="nvarchar" MaxLength="3" Nullable="false" />
+          <Property Name="MaxPersents" Type="nvarchar" MaxLength="3" Nullable="false" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -105,6 +114,16 @@
           <Property Name="IdStudent" Type="int" Nullable="false" />
           <Property Name="IdCriteria" Type="int" Nullable="false" />
           <Property Name="NumberOfPointsForCriteria" Type="nvarchar" MaxLength="6" Nullable="false" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="Teachers">
           <Key>
@@ -370,12 +389,14 @@
           <EntitySet Name="Discipline" EntityType="Self.Discipline" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DisciplineTeachers" EntityType="Self.DisciplineTeachers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Group" EntityType="Self.Group" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProcedureForTransferringPoints" EntityType="Self.ProcedureForTransferringPoints" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Speciality" EntityType="Self.Speciality" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StatusStudent" EntityType="Self.StatusStudent" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StatusTeacher" EntityType="Self.StatusTeacher" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StudentResult" EntityType="Self.StudentResult" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Teachers" EntityType="Self.Teachers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TypeAttestation" EntityType="Self.TypeAttestation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Vedomosti" EntityType="Self.Vedomosti" Schema="dbo" store:Type="Tables" />
@@ -475,6 +496,7 @@
           <Property Name="IdGroup" Type="Int32" Nullable="false" />
           <Property Name="IdTypeAttestation" Type="Int32" Nullable="false" />
           <Property Name="Сompleted" Type="Boolean" />
+          <Property Name="Deleted" Type="Boolean" />
           <NavigationProperty Name="Criteria" Relationship="Self.FK_Criteria_Attestation" FromRole="Attestation" ToRole="Criteria" />
           <NavigationProperty Name="Group" Relationship="Self.FK_Exam_Group" FromRole="Attestation" ToRole="Group" />
           <NavigationProperty Name="Discipline" Relationship="Self.FK_Exam_ProModule" FromRole="Attestation" ToRole="Discipline" />
@@ -527,6 +549,14 @@
           <NavigationProperty Name="Attestation" Relationship="Self.FK_Exam_Group" FromRole="Group" ToRole="Attestation" />
           <NavigationProperty Name="Speciality" Relationship="Self.FK_Group_Speciality" FromRole="Group" ToRole="Speciality" />
           <NavigationProperty Name="Student" Relationship="Self.FK_Student_Group" FromRole="Group" ToRole="Student" />
+        </EntityType>
+        <EntityType Name="ProcedureForTransferringPoints">
+          <Key>
+            <PropertyRef Name="FinalGrade" />
+          </Key>
+          <Property Name="FinalGrade" Type="String" MaxLength="1" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MinPercents" Type="String" MaxLength="3" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="MaxPersents" Type="String" MaxLength="3" FixedLength="false" Unicode="true" Nullable="false" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -589,6 +619,16 @@
           <Property Name="NumberOfPointsForCriteria" Type="String" MaxLength="6" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Criteria" Relationship="Self.FK_StudentResult_Criteria" FromRole="StudentResult" ToRole="Criteria" />
           <NavigationProperty Name="Student" Relationship="Self.FK_StudentResult_Student" FromRole="StudentResult" ToRole="Student" />
+        </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <EntityType Name="Teachers">
           <Key>
@@ -832,12 +872,14 @@
           <EntitySet Name="Discipline" EntityType="Self.Discipline" />
           <EntitySet Name="DisciplineTeachers" EntityType="Self.DisciplineTeachers" />
           <EntitySet Name="Group" EntityType="Self.Group" />
+          <EntitySet Name="ProcedureForTransferringPoints" EntityType="Self.ProcedureForTransferringPoints" />
           <EntitySet Name="Role" EntityType="Self.Role" />
           <EntitySet Name="Speciality" EntityType="Self.Speciality" />
           <EntitySet Name="StatusStudent" EntityType="Self.StatusStudent" />
           <EntitySet Name="StatusTeacher" EntityType="Self.StatusTeacher" />
           <EntitySet Name="Student" EntityType="Self.Student" />
           <EntitySet Name="StudentResult" EntityType="Self.StudentResult" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
           <EntitySet Name="Teachers" EntityType="Self.Teachers" />
           <EntitySet Name="TypeAttestation" EntityType="Self.TypeAttestation" />
           <EntitySet Name="Vedomosti" EntityType="Self.Vedomosti" />
@@ -927,6 +969,7 @@
                 <ScalarProperty Name="IdGroup" ColumnName="IdGroup" />
                 <ScalarProperty Name="IdTypeAttestation" ColumnName="IdTypeAttestation" />
                 <ScalarProperty Name="Сompleted" ColumnName="Сompleted" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -967,6 +1010,15 @@
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="CourseNumber" ColumnName="CourseNumber" />
                 <ScalarProperty Name="IdSpeciality" ColumnName="IdSpeciality" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProcedureForTransferringPoints">
+            <EntityTypeMapping TypeName="AISModel.ProcedureForTransferringPoints">
+              <MappingFragment StoreEntitySet="ProcedureForTransferringPoints">
+                <ScalarProperty Name="FinalGrade" ColumnName="FinalGrade" />
+                <ScalarProperty Name="MinPercents" ColumnName="MinPercents" />
+                <ScalarProperty Name="MaxPersents" ColumnName="MaxPersents" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1024,6 +1076,17 @@
                 <ScalarProperty Name="IdStudent" ColumnName="IdStudent" />
                 <ScalarProperty Name="IdCriteria" ColumnName="IdCriteria" />
                 <ScalarProperty Name="NumberOfPointsForCriteria" ColumnName="NumberOfPointsForCriteria" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="AISModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

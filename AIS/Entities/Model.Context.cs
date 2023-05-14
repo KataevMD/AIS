@@ -30,12 +30,14 @@ namespace AIS.Entities
         public virtual DbSet<Discipline> Discipline { get; set; }
         public virtual DbSet<DisciplineTeachers> DisciplineTeachers { get; set; }
         public virtual DbSet<Group> Group { get; set; }
+        public virtual DbSet<ProcedureForTransferringPoints> ProcedureForTransferringPoints { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Speciality> Speciality { get; set; }
         public virtual DbSet<StatusStudent> StatusStudent { get; set; }
         public virtual DbSet<StatusTeacher> StatusTeacher { get; set; }
         public virtual DbSet<Student> Student { get; set; }
         public virtual DbSet<StudentResult> StudentResult { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<Teachers> Teachers { get; set; }
         public virtual DbSet<TypeAttestation> TypeAttestation { get; set; }
         public virtual DbSet<Vedomosti> Vedomosti { get; set; }

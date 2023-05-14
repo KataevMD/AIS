@@ -175,62 +175,68 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AttestationsController.cs" />
     <Compile Include="Controllers\HoldingAttestationsController.cs" />
-    <Compile Include="Entities\AISModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AISModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\AISModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AISModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Entities\AISModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AISModel.edmx</DependentUpon>
-    </Compile>
     <Compile Include="Entities\Attestation.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Criteria.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Discipline.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\DisciplineTeachers.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Group.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\Model.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\ProcedureForTransferringPoints.cs">
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Role.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Speciality.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\StatusStudent.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\StatusTeacher.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Student.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\StudentResult.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\sysdiagrams.cs">
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Teachers.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\TypeAttestation.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\Vedomosti.cs">
-      <DependentUpon>AISModel.tt</DependentUpon>
+      <DependentUpon>Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -261,15 +267,15 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
-    <Content Include="Entities\AISModel.Context.tt">
+    <Content Include="Entities\Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>AISModel.edmx</DependentUpon>
-      <LastGenOutput>AISModel.Context.cs</LastGenOutput>
+      <DependentUpon>Model.edmx</DependentUpon>
+      <LastGenOutput>Model.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Entities\AISModel.tt">
+    <Content Include="Entities\Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>AISModel.edmx</DependentUpon>
-      <LastGenOutput>AISModel.cs</LastGenOutput>
+      <DependentUpon>Model.edmx</DependentUpon>
+      <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\contentManagement.js" />
     <Content Include="favicon.ico" />
@@ -281,12 +287,12 @@
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Entities\AISModel.edmx">
+    <EntityDeploy Include="Entities\Model.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>AISModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>Model.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Entities\AISModel.edmx.diagram">
-      <DependentUpon>AISModel.edmx</DependentUpon>
+    <Content Include="Entities\Model.edmx.diagram">
+      <DependentUpon>Model.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-3.6.4.intellisense.js" />
     <Content Include="Scripts\jquery-3.6.4.js" />

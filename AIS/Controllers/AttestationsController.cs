@@ -22,35 +22,50 @@ namespace AIS.Controllers
     {
         private readonly AISEntities db = new AISEntities();
 
-        public ActionResult Index(int? idTypeAttestation) //Открытие страницы со списокм аттестаций, с подгрузкой данных в соответсвии с должностью пользователя
+        public ActionResult Index(int? idTypeAttestation, int? idGroup, int? idDiscipline) //Открытие страницы со списокм аттестаций, с подгрузкой данных в соответсвии с должностью пользователя
         {
             IEnumerable<Attestation> attestations;
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser); 
 
             var typeAttestations = db.TypeAttestation.ToList();
             typeAttestations.Insert(0, new TypeAttestation { Title = "Все", IdTypeAttestation = 0 });
 
-            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality).ToList();
+            group.Insert(0, new Group { Title = "Все", IdGroup = 0 });
 
-            //if (User.IsInRole("Администратор")) //Если у пользователя задана роль администратора, то подгружается полный список аттестаций
-            //{
-            //    attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation);
+            var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
+            var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
+            var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline)).ToList();
+            disciplineCurrentUser.Insert(0, new Discipline { Title = "Все", IdDiscipline = 0 });
 
-            //}
-            //else //если роль отличнаыя от администратора, то подгружаются только те аттестации, которые принадлежать текущему пользователю с ролью преподавателя
-            //{
-                attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser);
-            //}
+
+            attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser && a.Deleted != true);
+            
 
             if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
             {
                 attestations = attestations.Where(a => a.IdTypeAttestation == idTypeAttestation);
             }
 
+            if (idGroup != null && idGroup != 0) // фильтрация аттестаций по типу
+            {
+                attestations = attestations.Where(a => a.IdGroup == idGroup);
+            }
+
+            if (idDiscipline != null && idDiscipline != 0) // фильтрация аттестаций по типу
+            {
+                attestations = attestations.Where(a => a.IdDiscipline == idDiscipline);
+            }
+
+
             AttestationListViewModel attestationListViewModel = new AttestationListViewModel
             {
                 Attestations = attestations,
                 IdCurentUser = idCurentUser,
-                TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title")
+                TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title"),
+                Groups = new SelectList(group, "IdGroup", "Title"),
+                Disciplines = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title")
             };
 
             return View(attestationListViewModel);
@@ -327,7 +342,8 @@ namespace AIS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Attestation attestation = db.Attestation.Find(id);
-            db.Attestation.Remove(attestation);
+            attestation.Deleted = true;
+            db.Entry(attestation).State = EntityState.Modified;
             db.SaveChanges();
             return RedirectToAction("Index");
         }

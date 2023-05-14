@@ -33,6 +33,7 @@ namespace AIS.Controllers
         public static Attestation holdingAttestations;
         private static List<Criteria> criterias;
         private static List<Student> studentList;
+        private static List<ProcedureForTransferringPoints> transferringPoints;
         private static decimal maxPointDiscipline;
         private static Student student;
 
@@ -57,6 +58,7 @@ namespace AIS.Controllers
             }
 
             maxPointDiscipline = countPoint;
+            transferringPoints = db.ProcedureForTransferringPoints.ToList();
 
             AttestationStudentViewModel asvm = new AttestationStudentViewModel { Attestations = holdingAttestations, Students = studentList, Criterias = criterias }; // Объект для передачи данных в представление
 
@@ -174,13 +176,13 @@ namespace AIS.Controllers
                 decimal coeff = maxPointDiscipline / maxPointStudent;
                 decimal percent = 100 / coeff;
 
-                if (percent >= 81)
+                if (percent >= decimal.Parse(transferringPoints[3].MinPercents))
                     vedomosti.FinalGrade = "5";
-                if (percent <= 80 && percent >= 71)
+                if (percent <= decimal.Parse(transferringPoints[2].MaxPersents) && percent >= decimal.Parse(transferringPoints[2].MinPercents))
                     vedomosti.FinalGrade = "4";
-                if (percent <= 70 && percent >= 51)
+                if (percent <= decimal.Parse(transferringPoints[1].MaxPersents) && percent >= decimal.Parse(transferringPoints[1].MinPercents))
                     vedomosti.FinalGrade = "3";
-                if (percent <= 50)
+                if (percent <= decimal.Parse(transferringPoints[0].MaxPersents))
                     vedomosti.FinalGrade = "2";
             }
 

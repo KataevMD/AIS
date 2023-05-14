@@ -39,6 +39,7 @@ namespace AIS.Entities
         public int IdGroup { get; set; }
         public int IdTypeAttestation { get; set; }
         public Nullable<bool> Сompleted { get; set; }
+        public Nullable<bool> Deleted { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Criteria> Criteria { get; set; }

@@ -16,7 +16,12 @@
         <label class="control-label">Тип аттестации: </label>
         @Html.DropDownList("idTypeAttestation", Model.TypeAttestations as SelectList, //Выпадающий список для фильтрации по типам аттестаций
                     htmlAttributes: new { @class = "form-select" })
-
+        <label class="control-label">Группа студентов: </label>
+        @Html.DropDownList("IdGroup", Model.Groups as SelectList, //Выпадающий список для фильтрации по группам студентов
+                    htmlAttributes: new { @class = "form-select" })
+        <label class="control-label">Дисциплина: </label>
+        @Html.DropDownList("IdDiscipline", Model.Disciplines as SelectList, //Выпадающий список для фильтрации по дисциплинам
+                    htmlAttributes: new { @class = "form-select" })
         <input type="submit" value="Поиск" class="btn btn-outline-secondary btn-sm" />
     </div>
 </form>
@@ -34,9 +39,6 @@
         </th>
         <th class="text-center">
             Дисциплина
-        </th>
-        <th class="text-center">
-            Преподаватель
         </th>
         <th class="text-center">
             Вид аттестации
@@ -67,9 +69,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Discipline.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Teachers.LastName) @Html.DisplayFor(modelItem => item.Teachers.FirstName) @Html.DisplayFor(modelItem => item.Teachers.Patronymic)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TypeAttestation.Title)

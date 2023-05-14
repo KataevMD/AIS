@@ -4,18 +4,20 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="f68a50332483485e82c925ecc037e861" Name="Diagram1">
+      <Diagram DiagramId="c51226bf9c6248dca9892267ae5c3c01" Name="Diagram1">
         <EntityTypeShape EntityType="AISModel.Attestation" Width="1.5" PointX="5.25" PointY="7.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Criteria" Width="1.5" PointX="7.5" PointY="12.25" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Discipline" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.DisciplineTeachers" Width="1.5" PointX="5.25" PointY="4.625" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Group" Width="1.5" PointX="3" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.ProcedureForTransferringPoints" Width="1.5" PointX="7.75" PointY="4.375" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Role" Width="1.5" PointX="0.75" PointY="3.625" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Speciality" Width="1.5" PointX="0.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.StatusStudent" Width="1.5" PointX="6" PointY="1.875" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.StatusTeacher" Width="1.5" PointX="0.75" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Student" Width="1.5" PointX="8.25" PointY="7.875" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.StudentResult" Width="1.5" PointX="10.5" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AISModel.sysdiagrams" Width="1.5" PointX="8.75" PointY="1.375" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Teachers" Width="1.5" PointX="3" PointY="3.75" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.TypeAttestation" Width="1.5" PointX="3" PointY="11.875" IsExpanded="true" />
         <EntityTypeShape EntityType="AISModel.Vedomosti" Width="1.5" PointX="10.5" PointY="6.375" IsExpanded="true" />
