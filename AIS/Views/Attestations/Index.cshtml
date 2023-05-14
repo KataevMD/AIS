@@ -6,10 +6,41 @@
     ViewBag.Title = "Index";
 }
 <!-- Модальное окно -->
-
+<!-- Модальное окно -->
+<div class="modal fade" id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Импорт новой аттестации</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <h3>Выберите файл для импорта</h3>
+                @using (Html.BeginForm("ImportAttestation", "Attestations", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    <div>
+                        <label for="formFileLg" class="form-label">Скачать шаблон можно по ссылке: @Html.ActionLink("Шаблон файла импорта", "Index", "Home")</label>
+                        <input class="form-control form-control-lg" id="formFileLg" name="upload" type="file" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required />
+                    </div>
+                    <br><br>
+                    <input type="submit" class="btn btn-primary" value="Импортировать" />
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
 <hr />
 <p>
     @Html.ActionLink("Добавить новую аттестацию", "Create", new { }, new { @class = "btn btn-secondary" })
+
+    <!-- Кнопка-триггер модального окна -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        Запустить модальное окно со статическим фоном
+    </button>
+
 </p>
 <form method="get">
     <div class="form-inline">

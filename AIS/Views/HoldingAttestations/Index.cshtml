@@ -80,7 +80,7 @@
                             </td>
                             <td class="text-center align-middle">
                                 @{
-                                    if (String.IsNullOrEmpty(@crt.WithdrawPercent))
+                                    if (decimal.Parse(@crt.WithdrawPercent) == 0)
                                     {
                                         <h>-</h>
                                     }
@@ -95,7 +95,7 @@
                             </td>
                             <td class="text-center align-middle">
                                 @{
-                                    if (String.IsNullOrEmpty(@crt.RemoveAPoint))
+                                    if (decimal.Parse(@crt.RemoveAPoint) == 0)
                                     {
                                         <h>-</h>
                                     }
@@ -113,7 +113,7 @@
                                 <input id="chekBox" class="form-check-input" type="checkbox" value="true" name="dataGets[@i].Accepted" />
                             </td>
                             <td class="text-center align-middle">
-                                @{ if (String.IsNullOrEmpty(@crt.RemoveAPoint) && String.IsNullOrEmpty(@crt.WithdrawPercent))
+                                @{ if (decimal.Parse(@crt.RemoveAPoint) == 0 && decimal.Parse(@crt.WithdrawPercent) == 0)
                                     {
                                         <input id="numberBox" min="0" readonly class="form-control" name="dataGets[@i].Point" type="number" />
                                     }

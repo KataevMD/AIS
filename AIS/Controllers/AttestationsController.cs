@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -10,6 +11,7 @@ using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using AIS.Entities;
 using AIS.Models;
+using Aspose.Cells;
 using Microsoft.AspNet.Identity;
 using Microsoft.Office.Interop.Word;
 using Table = Microsoft.Office.Interop.Word.Table;
@@ -26,7 +28,7 @@ namespace AIS.Controllers
         {
             IEnumerable<Attestation> attestations;
             var idCurentUser = Int32.Parse(User.Identity.GetUserId());
-            var curentUser = db.Teachers.Find(idCurentUser); 
+            var curentUser = db.Teachers.Find(idCurentUser);
 
             var typeAttestations = db.TypeAttestation.ToList();
             typeAttestations.Insert(0, new TypeAttestation { Title = "Все", IdTypeAttestation = 0 });
@@ -41,7 +43,7 @@ namespace AIS.Controllers
 
 
             attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser && a.Deleted != true);
-            
+
 
             if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
             {
@@ -82,7 +84,6 @@ namespace AIS.Controllers
 
         }
 
-
         // GET: Attestations
         public FileResult GetAttestationVedomost(int? idAttestations) //Запрос на формирование ведомости за экзамен
         {
@@ -91,13 +92,11 @@ namespace AIS.Controllers
             var vedomosti = db.Vedomosti.Where(v => v.IdAttestation == idAttestations).ToList();
             int count = vedomosti.Count;
 
-
             //Проверка на содержание файла ведомости по текущему экзамену
             if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx")))
             {
                 System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"));
             }
-
 
             //Словарь тегов, и значений, на которые будут заменены теги в шаблоне ведомости
             var items = new Dictionary<string, string>()
@@ -242,7 +241,7 @@ namespace AIS.Controllers
                 Groups = group
             };
 
-            
+
             ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title", attestation.IdTypeAttestation);
             return View(attestationCriteriasViewModel);
         }
@@ -256,7 +255,7 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
-                
+
                 db.Entry(attestation).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -287,6 +286,107 @@ namespace AIS.Controllers
             ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title");
             Attestation attestation = new Attestation();
             return View(attestation);
+        }
+
+        [HttpPost]
+        public ActionResult ImportAttestation(HttpPostedFileBase upload)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
+            if (upload != null)
+            {
+                // получаем имя файла
+                string fileName = Path.GetFileName(upload.FileName);
+
+
+                //Проверка на содержание файла ведомости по текущему экзамену
+                if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
+                {
+                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                }
+
+                string ext = Path.GetExtension(fileName);
+                if (ext == ".xlsx")
+                {
+                    // сохраняем файл в папку FilesImport в проекте
+                    upload.SaveAs(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+
+                    Workbook wb = new Workbook(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    WorksheetCollection collection = wb.Worksheets;
+
+                    // Получить рабочий лист, используя его индекс
+                    Worksheet worksheet = collection[0];
+
+                    int rows = worksheet.Cells.MaxDataRow;
+
+                    string titleDiscipline = worksheet.Cells[1, 2].Value.ToString().Trim();
+                    string startDate = worksheet.Cells[2, 2].Value.ToString().Trim();
+                    string endDate = worksheet.Cells[3, 2].Value.ToString().Trim();
+                    string titleGroup = worksheet.Cells[4, 2].Value.ToString().Trim();
+                    string titleTypeAttestation = worksheet.Cells[5, 2].Value.ToString().Trim();
+
+                    Attestation attestation = new Attestation();
+
+                    var discipline = db.Discipline.Where(d => d.Title == titleDiscipline).FirstOrDefault();
+                    var group = db.Group.Where(g => g.Title == titleGroup).FirstOrDefault();
+                    var typeAttestation = db.TypeAttestation.Where(ta => ta.Title == titleTypeAttestation).FirstOrDefault();
+
+                    attestation.IdDiscipline = discipline.IdDiscipline;
+                    attestation.IdGroup = group.IdGroup;
+                    attestation.IdTypeAttestation = typeAttestation.IdTypeAttestation;
+                    attestation.StartDate = DateTime.Parse(startDate);
+                    attestation.EndDate = DateTime.Parse(endDate);
+                    attestation.IdTeachers = Int32.Parse(User.Identity.GetUserId());
+
+                    db.Attestation.Add(attestation);
+                    db.SaveChanges();
+
+                    string check = worksheet.Cells[7, 0].Value.ToString().Trim();
+
+                    if (check != "Номер критерия")
+                    {
+
+                    }
+                    else
+                    {
+                        List<Criteria> criterias = new List<Criteria>();
+                        // Цикл по строкам
+                        for (int i = 8; i < rows; i++)
+                        {
+                            Criteria newCriteria = new Criteria();
+                            newCriteria.IdAttestation = attestation.IdAttestation;
+                            newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
+
+                            if (worksheet.Cells[i, 2].Value != null)
+                            {
+                                newCriteria.Description = worksheet.Cells[i, 2].Value.ToString();
+                            }
+                            else
+                            {
+                                newCriteria.Description = "";
+                            }
+                            
+
+                            newCriteria.WithdrawPercent = worksheet.Cells[i, 3].Value.ToString();
+                            newCriteria.RemoveAPoint = worksheet.Cells[i, 4].Value.ToString();
+                            newCriteria.NumberOfPionts = worksheet.Cells[i, 5].Value.ToString();
+                            criterias.Add(newCriteria);
+                            
+                        }
+                        db.Criteria.AddRange(criterias);
+                        db.SaveChanges();
+                        System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    }
+
+
+
+                }
+                return RedirectToAction("Index");
+
+            }
+            return RedirectToAction("Index");
         }
 
         // POST: Attestations/Create
