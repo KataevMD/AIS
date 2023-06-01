@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="Хранилище AISModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Хранилище AISModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Attestation">
           <Key>
             <PropertyRef Name="IdAttestation" />
@@ -480,7 +480,8 @@
             <End Role="Vedomosti" EntitySet="Vedomosti" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="AISModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -515,9 +516,9 @@
           <Property Name="NumberOfPionts" Type="String" MaxLength="6" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="WithdrawPercent" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
           <Property Name="RemoveAPoint" Type="String" MaxLength="6" FixedLength="false" Unicode="true" />
+          <Property Name="Deleted" Type="Boolean" />
           <NavigationProperty Name="Attestation" Relationship="Self.FK_Criteria_Attestation" FromRole="Criteria" ToRole="Attestation" />
           <NavigationProperty Name="StudentResult" Relationship="Self.FK_StudentResult_Criteria" FromRole="Criteria" ToRole="StudentResult" />
-          <Property Name="Deleted" Type="Boolean" Nullable="true" />
         </EntityType>
         <EntityType Name="Discipline">
           <Key>
@@ -977,7 +978,6 @@
           <EntitySetMapping Name="Criteria">
             <EntityTypeMapping TypeName="AISModel.Criteria">
               <MappingFragment StoreEntitySet="Criteria">
-                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
                 <ScalarProperty Name="IdCriteria" ColumnName="IdCriteria" />
                 <ScalarProperty Name="IdAttestation" ColumnName="IdAttestation" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
@@ -985,6 +985,7 @@
                 <ScalarProperty Name="NumberOfPionts" ColumnName="NumberOfPionts" />
                 <ScalarProperty Name="WithdrawPercent" ColumnName="WithdrawPercent" />
                 <ScalarProperty Name="RemoveAPoint" ColumnName="RemoveAPoint" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

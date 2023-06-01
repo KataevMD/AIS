@@ -1,22 +1,22 @@
 ﻿@model AIS.Entities.Student
 
-<div id="searchresults">
-    <h4>Выбран студент: </h4>
 
-    @{
-        if (Model != null)
-        {
-            <p>
-                @Html.DisplayFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.DisplayFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.DisplayFor(model => model.Patronymic, new { htmlAttributes = new { @class = "form-control" } })
-            </p>
-        }
-        else
-        {
-            <p>
-                Такой студент не найден! Обновите страницу для обновления информации!
-            </p>
-        }
+<h4>Выбран студент: </h4>
+
+@{
+    if (Model != null)
+    {
+        <p>
+            @Html.DisplayFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.DisplayFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.DisplayFor(model => model.Patronymic, new { htmlAttributes = new { @class = "form-control" } })
+        </p>
     }
-</div>
+    else
+    {
+        <p>
+            Такой студент не найден! Обновите страницу для обновления информации!
+        </p>
+    }
+}
+

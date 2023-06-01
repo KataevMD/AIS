@@ -26,7 +26,7 @@
         @Html.LabelFor(model => model.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
 
-            <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
+            <input class="form-control text-box single-line" data-val="true" data-val-date="Поле 'Дата начала аттестации' должно содержать дату." data-val-required="Требуется поле 'Дата начала аттестации'."
                    id="StartDate"
                    name="StartDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
             <span class="field-validation-valid text-danger" data-valmsg-for="StartDate" data-valmsg-replace="true"></span>
@@ -37,7 +37,7 @@
     <div class="form-group">
         @Html.LabelFor(model => model.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
+            <input class="form-control text-box single-line" data-val="true" data-val-date="Поле 'Дата конца аттестации' должно содержать дату." data-val-required="Требуется поле 'Дата конца аттестации'."
                    id="EndDate"
                    name="EndDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
             <span class="field-validation-valid text-danger" data-valmsg-for="EndDate" data-valmsg-replace="true"></span>

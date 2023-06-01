@@ -27,7 +27,8 @@ namespace AIS.Entities
         public string NumberOfPionts { get; set; }
         public string WithdrawPercent { get; set; }
         public string RemoveAPoint { get; set; }
-    
+        public Nullable<bool> Deleted { get; set; }
+
         public virtual Attestation Attestation { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentResult> StudentResult { get; set; }

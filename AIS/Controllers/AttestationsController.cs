@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -14,6 +16,7 @@ using AIS.Models;
 using Aspose.Cells;
 using Microsoft.AspNet.Identity;
 using Microsoft.Office.Interop.Word;
+using static System.Net.Mime.MediaTypeNames;
 using Table = Microsoft.Office.Interop.Word.Table;
 
 namespace AIS.Controllers
@@ -109,12 +112,12 @@ namespace AIS.Controllers
                 {"<DATE>", attestation.EndDate.ToString("«dd» MMMM yyyy")}
             };
 
-            Application wordApp = null;
+            Microsoft.Office.Interop.Word.Application wordApp = null;
             Document wordDoc;
             Table wordTable;
             try
             {
-                wordApp = new Application();
+                wordApp = new Microsoft.Office.Interop.Word.Application();
 
                 object missing = Type.Missing;
                 object fileName = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен.docx"); //Путь к шаблону ведомости
@@ -295,6 +298,7 @@ namespace AIS.Controllers
             {
                 return RedirectToAction("Index");
             }
+            List<String> errors = new List<String>();
             if (upload != null)
             {
                 // получаем имя файла
@@ -306,7 +310,7 @@ namespace AIS.Controllers
                 {
                     System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
                 }
-
+                int countError = 0;
                 string ext = Path.GetExtension(fileName);
                 if (ext == ".xlsx")
                 {
@@ -321,18 +325,88 @@ namespace AIS.Controllers
 
                     int rows = worksheet.Cells.MaxDataRow;
 
+                    if (worksheet.Cells[1, 2].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Пустая чейка С2! В ячейке С2 должно находится наименование дисциплины, по которой проводится аттестация!");
+                        countError++;
+                    }
+
+                    if (worksheet.Cells[2, 2].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Пустая ячейка С3! В ячейке С3 должна находится дата начала аттестации в формате 'дд.мм.гггг'!");
+                        countError++;
+                    }
+
+                    if (worksheet.Cells[3, 2].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Пустая ячейка С4! В ячейке С4 должно находится дата окончания аттестации в формате 'дд.мм.гггг'!");
+                        countError++;
+                    }
+
+                    if (worksheet.Cells[4, 2].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Пустая ячейка С5! В ячейке С5 должно находится наименование студенческой группы, у которой проводится аттестация!");
+                        countError++;
+                    }
+
+                    if (worksheet.Cells[5, 2].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Пустая ячейка С6! В ячейке С6 должно находится наименование типа аттестации!");
+                        countError++;
+                    }
+
+                    if (countError > 0)
+                    {
+                        return PartialView(errors);
+                    }
+
                     string titleDiscipline = worksheet.Cells[1, 2].Value.ToString().Trim();
                     string startDate = worksheet.Cells[2, 2].Value.ToString().Trim();
                     string endDate = worksheet.Cells[3, 2].Value.ToString().Trim();
                     string titleGroup = worksheet.Cells[4, 2].Value.ToString().Trim();
                     string titleTypeAttestation = worksheet.Cells[5, 2].Value.ToString().Trim();
-
-                    Attestation attestation = new Attestation();
+                    
+                    
 
                     var discipline = db.Discipline.Where(d => d.Title == titleDiscipline).FirstOrDefault();
-                    var group = db.Group.Where(g => g.Title == titleGroup).FirstOrDefault();
-                    var typeAttestation = db.TypeAttestation.Where(ta => ta.Title == titleTypeAttestation).FirstOrDefault();
+                    if(discipline == null)
+                    {
+                        errors.Add($"Указанная дисциплина {titleDiscipline} не найдена. Проверьте правильность написания названия дисциплины! Перечень дисциплин приведен в файле шаблона на листе 'Дисциплины'.");
+                        countError++;
+                    }
 
+                    var group = db.Group.Where(g => g.Title == titleGroup).FirstOrDefault();
+                    if (group == null)
+                    {
+                        errors.Add($"Указанная группа {titleGroup} не найдена. Проверьте правильность написания названия группы! Список групп приведен в файле шаблона на листе 'Группы'");
+                        countError++;
+                    }
+
+                    var typeAttestation = db.TypeAttestation.Where(ta => ta.Title == titleTypeAttestation).FirstOrDefault();
+                    if (typeAttestation == null)
+                    {
+                        errors.Add($"Указанная группа {titleTypeAttestation} не найдена. Проверьте правильность написания названия типа аттестации! Список типов аттестаций приведен в файле шаблона на листе 'Типы аттестаций'");
+                        countError++;
+                    }
+
+                    if (!DateTime.TryParse(startDate, out DateTime succesStartDate))
+                    {
+                        errors.Add($"Указанная дата начала аттестации, в ячейке С3, не соответствует формату 'дд.мм.гггг'!");
+                        countError++;
+                    }
+
+                    if (!DateTime.TryParse(startDate, out DateTime succesEndDate))
+                    {
+                        errors.Add($"Указанная дата конца аттестации, в ячейке С4, не соответствует формату 'дд.мм.гггг'!");
+                        countError++;
+                    }
+
+                    if (countError > 0)
+                    {
+                        return PartialView(errors);
+                    }
+
+                    Attestation attestation = new Attestation();
                     attestation.IdDiscipline = discipline.IdDiscipline;
                     attestation.IdGroup = group.IdGroup;
                     attestation.IdTypeAttestation = typeAttestation.IdTypeAttestation;
@@ -343,50 +417,121 @@ namespace AIS.Controllers
                     db.Attestation.Add(attestation);
                     db.SaveChanges();
 
-                    string check = worksheet.Cells[7, 0].Value.ToString().Trim();
-
-                    if (check != "Номер критерия")
+                    if (worksheet.Cells[7, 0].Value == null)
                     {
-
+                        errors.Add("Неверно сформирован шаблон! Заголовок таблицы должны начинаться с ячейки 8A и до ячейки 8F!");
+                        return PartialView(errors);
                     }
-                    else
-                    {
-                        List<Criteria> criterias = new List<Criteria>();
-                        // Цикл по строкам
-                        for (int i = 8; i < rows; i++)
-                        {
-                            Criteria newCriteria = new Criteria();
-                            newCriteria.IdAttestation = attestation.IdAttestation;
-                            newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
 
-                            if (worksheet.Cells[i, 2].Value != null)
+                    List<Criteria> criterias = new List<Criteria>();
+                    // Цикл по строкам
+                    for (int i = 8; i < rows; i++)
+                    {
+                        Criteria newCriteria = new Criteria();
+                        newCriteria.IdAttestation = attestation.IdAttestation;
+
+                        if (worksheet.Cells[i, 1].Value != null)
+                        {
+                            newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
+                        }
+                        else
+                        {
+                            errors.Add($"Пустая ячейка B{i+1}! Нет наименования критерия!");
+                            countError++;
+                        }
+
+                        if (worksheet.Cells[i, 2].Value != null)
+                        {
+                            newCriteria.Description = worksheet.Cells[i, 2].Value.ToString();
+                        }
+                        else
+                        {
+                            newCriteria.Description = "";
+                        }
+
+                        if (worksheet.Cells[i, 3].Value != null)
+                        {
+                            
+                            if (int.TryParse(worksheet.Cells[i, 3].Value.ToString(), out int percent))
                             {
-                                newCriteria.Description = worksheet.Cells[i, 2].Value.ToString();
+                                newCriteria.WithdrawPercent = percent.ToString();
                             }
                             else
                             {
-                                newCriteria.Description = "";
+                                errors.Add($"В ячейке D{i + 1} должно быть целое неотрицательное число!");
+                                countError++;
                             }
-                            
-
-                            newCriteria.WithdrawPercent = worksheet.Cells[i, 3].Value.ToString();
-                            newCriteria.RemoveAPoint = worksheet.Cells[i, 4].Value.ToString();
-                            newCriteria.NumberOfPionts = worksheet.Cells[i, 5].Value.ToString();
-                            criterias.Add(newCriteria);
-                            
                         }
-                        db.Criteria.AddRange(criterias);
-                        db.SaveChanges();
-                        System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                        else
+                        {
+                            newCriteria.WithdrawPercent = "0";
+                        }
+
+                        if (worksheet.Cells[i, 4].Value != null)
+                        {
+
+                            if (decimal.TryParse(worksheet.Cells[i, 4].Value.ToString().Trim(), out decimal remPoint))
+                            {
+                                newCriteria.RemoveAPoint = remPoint.ToString();
+                            }
+                            else
+                            {
+                                errors.Add($"В ячейке E{i + 1} должно быть число формата 0.00!");
+                                countError++;
+                            }
+                        }
+                        else
+                        {
+                            newCriteria.RemoveAPoint = "0";
+                        }
+
+                        if (worksheet.Cells[i, 5].Value != null)
+                        {
+
+                            if (decimal.TryParse(worksheet.Cells[i, 5].Value.ToString().Trim(), out decimal point))
+                            {
+                                newCriteria.NumberOfPionts = point.ToString();
+                            }
+                            else
+                            {
+                                errors.Add($"В ячейке F{i + 1} должно быть число формата 0.00!");
+                                countError++;
+                            }
+                        }
+                        else
+                        {
+                            errors.Add($"Пустая ячейка F{i + 1}! Нет максимального балла за критерий!");
+                            countError++;
+                        }
+
+
+                        if (countError > 0)
+                        {
+                            countError = 0;
+                            continue;
+                        }
+
+                        criterias.Add(newCriteria);
+
                     }
-
-
+                    if (errors.Count > 0)
+                    {
+                        return PartialView(errors);
+                    }
+                    db.Criteria.AddRange(criterias);
+                    db.SaveChanges();
+                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
 
                 }
-                return RedirectToAction("Index");
+                else
+                {
+                    errors.Add("Загружен неверный формат документа. Долежн быть формат .xlsx, а не " + ext);
+                    return PartialView(errors);
+                }
 
             }
-            return RedirectToAction("Index");
+            errors.Add("Не был выбран файл для импорта!");
+            return PartialView(errors);
         }
 
         // POST: Attestations/Create
