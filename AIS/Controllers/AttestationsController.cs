@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -76,7 +79,7 @@ namespace AIS.Controllers
             return View(attestationListViewModel);
         }
 
-        // GET: Attestations
+        // GET: BlockAttestations
         public ActionResult BlockAttestations(int? idAttestations) //Запрос на завершение аттестации
         {
             var attestation = db.Attestation.Find(idAttestations);
@@ -87,19 +90,13 @@ namespace AIS.Controllers
 
         }
 
-        // GET: Attestations
+        // GET: GetAttestationVedomost
         public FileResult GetAttestationVedomost(int? idAttestations) //Запрос на формирование ведомости за экзамен
         {
 
             var attestation = db.Attestation.Find(idAttestations);
             var vedomosti = db.Vedomosti.Where(v => v.IdAttestation == idAttestations).ToList();
             int count = vedomosti.Count;
-
-            //Проверка на содержание файла ведомости по текущему экзамену
-            if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx")))
-            {
-                System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"));
-            }
 
             //Словарь тегов, и значений, на которые будут заменены теги в шаблоне ведомости
             var items = new Dictionary<string, string>()
@@ -172,7 +169,7 @@ namespace AIS.Controllers
 
                     }
                 // имя нового файла ведомости
-                object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
+                object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Group/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
 
                 wordDoc.SaveAs2(newFile); //сохранить заполненный данными шаблон как новый документ
                 wordApp.ActiveDocument.Close(); //закрытие активного документа
@@ -186,12 +183,154 @@ namespace AIS.Controllers
                 Console.WriteLine(ex.Message);
             }
 
-            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"); //путь до сохраненной ранее ведомости
+            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Group/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx"); //путь до сохраненной ранее ведомости
             string fileType = "application/word";
             // Имя файла - необязательно. Это то имя файла, которое будет задано скачиваемому файлу
             string file_name = "Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx";
 
             return File(path, fileType, file_name); //отправка на клиент файла ведомости
+        }
+
+        // GET: GetAttestationVedomost
+        public FileResult GetAttestationVedomostStudent(int? idAttestations) //Запрос на формирование ведомости за экзамен
+        {
+
+            var attestation = db.Attestation.Find(idAttestations);
+            var vedomosti = attestation.Vedomosti.ToList();
+
+            string path = HttpContext.Server.MapPath("~/FilesVedomosti/Group/" + attestation.Group.Title);
+            string subpath = $"{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}";
+
+
+            DirectoryInfo dirInfo = new DirectoryInfo(path);
+            if (!dirInfo.Exists)
+            {
+                dirInfo.Create();
+            }
+            dirInfo.CreateSubdirectory(subpath);
+
+
+            var listiIdCriteriAttestation = attestation.Criteria.Select(c => c.IdCriteria).ToList();
+            var listCriteriaAttestation = attestation.Criteria.ToList();
+            int count = listCriteriaAttestation.Count;
+
+            var listStudentAttestation = attestation.Group.Student.ToList();
+
+            var resStudent = db.StudentResult.Where(rs => listiIdCriteriAttestation.Contains(rs.IdCriteria)).ToList();
+
+            foreach (Student currentStudent in listStudentAttestation)
+            {
+                var resultStudentGrade = vedomosti.Where(v => v.IdStudent == currentStudent.IdStudent).First();
+
+                StringBuilder stringBuilder = new StringBuilder();
+
+                stringBuilder.Append(resultStudentGrade.FinalGrade);
+
+                if (resultStudentGrade.FinalGrade == "5")
+                    stringBuilder.Append(" (отлично)");
+                if (resultStudentGrade.FinalGrade == "4")
+                    stringBuilder.Append(" (хорошо)");
+                if (resultStudentGrade.FinalGrade == "3")
+                    stringBuilder.Append(" (удовлетворительно)");
+                if (resultStudentGrade.FinalGrade == "2")
+                    stringBuilder.Append(" (неудовлетворительно)");
+
+                //Словарь тегов, и значений, на которые будут заменены теги в шаблоне ведомости
+                var items = new Dictionary<string, string>()
+                {
+                    {"<DISCIPLINE>", attestation.Discipline.Title},
+                    {"<NUMBERCOURCE>", attestation.Group.CourseNumber},
+                    {"<TITLEGROUP>", attestation.Group.Title},
+                    {"<SPECIALITY>", attestation.Group.Speciality.Title},
+                    {"<FIOPREP>", attestation.Teachers.LastName + " " + attestation.Teachers.FirstName+ " " + attestation.Teachers.Patronymic},
+                    {"<FIOSTUD>", currentStudent.LastName + " " + currentStudent.FirstName+ " " + currentStudent.Patronymic},
+                    {"<FINALGRADE>", stringBuilder.ToString() },
+                    {"<DATE>", attestation.EndDate.ToString("«dd» MMMM yyyy")}
+                };
+
+                var resultCurentStudent = resStudent.Where(rs => rs.IdStudent == currentStudent.IdStudent).ToList();
+
+                Microsoft.Office.Interop.Word.Application wordApp = null;
+                Document wordDoc;
+                Table wordTable;
+                try
+                {
+                    wordApp = new Microsoft.Office.Interop.Word.Application();
+
+                    object missing = Type.Missing;
+                    object fileName = HttpContext.Server.MapPath("~/FilesVedomosti/Ведомость экзамен (студент).docx"); //Путь к шаблону ведомости
+
+                    wordDoc = wordApp.Documents.Open(ref fileName, ref missing, ref missing, ref missing); //открываем шаблон ведомости
+
+                    foreach (var item in items) // Перебор всех тегов и значений словаря, с последующей                                              // заменой каждого тега на соответствующее для него значение текущей аттестации
+                    {
+                        Find find = wordApp.Selection.Find;
+                        find.Text = item.Key;
+                        find.Replacement.Text = item.Value;
+
+                        object wrap = WdFindWrap.wdFindContinue;
+                        object replace = WdReplace.wdReplaceAll;
+
+                        find.Execute(FindText: Type.Missing,
+                            MatchCase: false, MatchWholeWord: false, MatchWildcards: false,
+                            MatchSoundsLike: missing, MatchAllWordForms: false, Forward: true,
+                            Wrap: wrap, Format: false, ReplaceWith: missing, Replace: replace);
+
+                    }
+
+                    wordTable = wordDoc.Tables[2]; //Обращение к таблице результатов студентов за экзамен
+
+                    int row = 2;
+                    foreach (Criteria criteria in listCriteriaAttestation)
+                    {
+                        wordTable.Rows.Add(System.Reflection.Missing.Value);
+                        wordTable.Cell(row, 1).Range.Text = Convert.ToString(row - 1);
+                        wordTable.Cell(row, 2).Range.Text = criteria.Title;
+                        wordTable.Cell(row, 3).Range.Text = "0,00";
+
+                        foreach (StudentResult criteriaStudent in resultCurentStudent)
+                        {
+                            if (criteria.IdCriteria == criteriaStudent.IdCriteria)
+                                wordTable.Cell(row, 3).Range.Text = criteriaStudent.NumberOfPointsForCriteria;
+
+                        }
+                        row++;
+                    }
+
+                    // имя нового файла ведомости
+                    object newFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}/Ведомость студента {currentStudent.LastName} {currentStudent.FirstName}.docx");
+
+                    wordDoc.SaveAs2(newFile); //сохранить заполненный данными шаблон как новый документ
+                    wordApp.ActiveDocument.Close(); //закрытие активного документа
+                    wordApp?.Quit(); //отключение от приложения для работы с документами типа Word
+
+
+                }
+                catch (Exception ex)
+                {
+                    wordApp?.Quit();
+                    Console.WriteLine(ex.Message);
+                }
+
+            }
+
+            string pathZip = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}");
+
+            //Проверка на содержание файла ведомости по текущему экзамену
+            if (System.IO.File.Exists(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip")))
+            {
+                System.IO.File.Delete(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"));
+            }
+
+            ZipFile.CreateFromDirectory(pathZip, HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"));
+
+            string pathFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"); //путь до сохраненного ранее архива
+            string fileType = "application/zip";
+            // Имя файла - необязательно. Это то имя файла, которое будет задано скачиваемому файлу
+            string file_name = $"{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip";
+
+            return File(pathFile, fileType, file_name); //отправка на клиент файла ведомости
+
         }
 
         // GET: Attestations/Details/5
@@ -365,11 +504,11 @@ namespace AIS.Controllers
                     string endDate = worksheet.Cells[3, 2].Value.ToString().Trim();
                     string titleGroup = worksheet.Cells[4, 2].Value.ToString().Trim();
                     string titleTypeAttestation = worksheet.Cells[5, 2].Value.ToString().Trim();
-                    
-                    
+
+
 
                     var discipline = db.Discipline.Where(d => d.Title == titleDiscipline).FirstOrDefault();
-                    if(discipline == null)
+                    if (discipline == null)
                     {
                         errors.Add($"Указанная дисциплина {titleDiscipline} не найдена. Проверьте правильность написания названия дисциплины! Перечень дисциплин приведен в файле шаблона на листе 'Дисциплины'.");
                         countError++;
@@ -436,7 +575,7 @@ namespace AIS.Controllers
                         }
                         else
                         {
-                            errors.Add($"Пустая ячейка B{i+1}! Нет наименования критерия!");
+                            errors.Add($"Пустая ячейка B{i + 1}! Нет наименования критерия!");
                             countError++;
                         }
 
@@ -451,7 +590,7 @@ namespace AIS.Controllers
 
                         if (worksheet.Cells[i, 3].Value != null)
                         {
-                            
+
                             if (int.TryParse(worksheet.Cells[i, 3].Value.ToString(), out int percent))
                             {
                                 newCriteria.WithdrawPercent = percent.ToString();

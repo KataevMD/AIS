@@ -68,6 +68,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -340,7 +341,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="FilesImport\" />
-    <Folder Include="FilesVedomosti\" />
+    <Folder Include="FilesVedomosti\Group\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

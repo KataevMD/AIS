@@ -130,9 +130,12 @@
                 {
                     <td />
                     <td>
-                        @Html.ActionLink("Сформировать ведомость", "GetAttestationVedomost", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                        @Html.ActionLink("Сформировать ведомость по группе", "GetAttestationVedomost", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
                     </td>
-                    <td />
+                    <td>
+                        @Html.ActionLink("Сформировать ведомость по каждому студенту", "GetAttestationVedomostStudent", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                    
                 }
                 else
                 {
