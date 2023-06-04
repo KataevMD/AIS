@@ -199,7 +199,7 @@ namespace AIS.Controllers
             var vedomosti = attestation.Vedomosti.ToList();
 
             string path = HttpContext.Server.MapPath("~/FilesVedomosti/Group/" + attestation.Group.Title);
-            string subpath = $"{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}";
+            string subpath = $"{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}";
 
 
             DirectoryInfo dirInfo = new DirectoryInfo(path);
@@ -298,7 +298,7 @@ namespace AIS.Controllers
                     }
 
                     // имя нового файла ведомости
-                    object newFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}/Ведомость студента {currentStudent.LastName} {currentStudent.FirstName}.docx");
+                    object newFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}/Ведомость студента {currentStudent.LastName} {currentStudent.FirstName}.docx");
 
                     wordDoc.SaveAs2(newFile); //сохранить заполненный данными шаблон как новый документ
                     wordApp.ActiveDocument.Close(); //закрытие активного документа
@@ -314,21 +314,21 @@ namespace AIS.Controllers
 
             }
 
-            string pathZip = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}");
+            string pathZip = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}");
 
             //Проверка на содержание файла ведомости по текущему экзамену
-            if (System.IO.File.Exists(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip")))
+            if (System.IO.File.Exists(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip")))
             {
-                System.IO.File.Delete(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"));
+                System.IO.File.Delete(HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip"));
             }
 
-            ZipFile.CreateFromDirectory(pathZip, HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"));
+            ZipFile.CreateFromDirectory(pathZip, HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip"));
 
-            string pathFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip"); //путь до сохраненного ранее архива
+            string pathFile = HttpContext.Server.MapPath($"~/FilesVedomosti/Group/{attestation.Group.Title}/{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip"); //путь до сохраненного ранее архива
             string fileType = "application/zip";
             // Имя файла - необязательно. Это то имя файла, которое будет задано скачиваемому файлу
-            string file_name = $"{attestation.Discipline.Title} {attestation.EndDate.ToString("dd.MM.yyyy")}.zip";
-
+            string file_name = $"{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip";
+    
             return File(pathFile, fileType, file_name); //отправка на клиент файла ведомости
 
         }
@@ -369,6 +369,7 @@ namespace AIS.Controllers
             var criteriasAttestaton = db.Criteria.Where(c => c.IdAttestation == attestation.IdAttestation);
 
             var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
+
             var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
             var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline));
 
@@ -660,18 +661,177 @@ namespace AIS.Controllers
                     db.Criteria.AddRange(criterias);
                     db.SaveChanges();
                     System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
-
+                    errors.Add("Импорт аттестации с криетриями успешно завершен. Для отображения данных необходимо закрыть данное окно, после чего нажать клавишу 'F5'.");
                 }
                 else
                 {
-                    errors.Add("Загружен неверный формат документа. Долежн быть формат .xlsx, а не " + ext);
+                    errors.Add("Загружен неверный формат документа. Должен быть формат .xlsx, а не " + ext);
                     return PartialView(errors);
                 }
 
             }
-            errors.Add("Не был выбран файл для импорта!");
+            else
+            {
+                errors.Add("Не был выбран файл для импорта!");
+                return PartialView(errors);
+            }
             return PartialView(errors);
         }
+
+
+        [HttpPost]
+        public ActionResult ImportCriterias(int IdAttestation, HttpPostedFileBase upload)
+        {
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Index");
+            }
+            List<String> errors = new List<String>();
+            if (upload != null)
+            {
+                // получаем имя файла
+                string fileName = Path.GetFileName(upload.FileName);
+
+                //Проверка на содержание файла ведомости по текущему экзамену
+                if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
+                {
+                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                }
+                int countError = 0;
+                string ext = Path.GetExtension(fileName);
+                if (ext == ".xlsx")
+                {
+                    // сохраняем файл в папку FilesImport в проекте
+                    upload.SaveAs(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+
+                    Workbook wb = new Workbook(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    WorksheetCollection collection = wb.Worksheets;
+
+                    // Получить рабочий лист, используя его индекс
+                    Worksheet worksheet = collection[0];
+
+                    int rows = worksheet.Cells.MaxDataRow;
+
+                    if (worksheet.Cells[7, 0].Value == null)
+                    {
+                        errors.Add("Неверно сформирован шаблон! Заголовок таблицы должны начинаться с ячейки 8A и до ячейки 8F!");
+                        return PartialView(errors);
+                    }
+
+                    List<Criteria> criterias = new List<Criteria>();
+                    // Цикл по строкам
+                    for (int i = 8; i < rows; i++)
+                    {
+                        Criteria newCriteria = new Criteria();
+                        newCriteria.IdAttestation = IdAttestation;
+
+                        if (worksheet.Cells[i, 1].Value != null)
+                        {
+                            newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
+                        }
+                        else
+                        {
+                            errors.Add($"Пустая ячейка B{i + 1}! Нет наименования критерия!");
+                            countError++;
+                        }
+
+                        if (worksheet.Cells[i, 2].Value != null)
+                        {
+                            newCriteria.Description = worksheet.Cells[i, 2].Value.ToString();
+                        }
+                        else
+                        {
+                            newCriteria.Description = "";
+                        }
+
+                        if (worksheet.Cells[i, 3].Value != null)
+                        {
+
+                            if (int.TryParse(worksheet.Cells[i, 3].Value.ToString(), out int percent))
+                            {
+                                newCriteria.WithdrawPercent = percent.ToString();
+                            }
+                            else
+                            {
+                                errors.Add($"В ячейке D{i + 1} должно быть целое неотрицательное число!");
+                                countError++;
+                            }
+                        }
+                        else
+                        {
+                            newCriteria.WithdrawPercent = "0";
+                        }
+
+                        if (worksheet.Cells[i, 4].Value != null)
+                        {
+
+                            if (decimal.TryParse(worksheet.Cells[i, 4].Value.ToString().Trim(), out decimal remPoint))
+                            {
+                                newCriteria.RemoveAPoint = remPoint.ToString();
+                            }
+                            else
+                            {
+                                errors.Add($"В ячейке E{i + 1} должно быть число формата 0.00!");
+                                countError++;
+                            }
+                        }
+                        else
+                        {
+                            newCriteria.RemoveAPoint = "0";
+                        }
+
+                        if (worksheet.Cells[i, 5].Value != null)
+                        {
+
+                            if (decimal.TryParse(worksheet.Cells[i, 5].Value.ToString().Trim(), out decimal point))
+                            {
+                                newCriteria.NumberOfPionts = point.ToString();
+                            }
+                            else
+                            {
+                                errors.Add($"В ячейке F{i + 1} должно быть число формата 0.00!");
+                                countError++;
+                            }
+                        }
+                        else
+                        {
+                            errors.Add($"Пустая ячейка F{i + 1}! Нет максимального балла за критерий!");
+                            countError++;
+                        }
+
+                        if (countError > 0)
+                        {
+                            countError = 0;
+                            continue;
+                        }
+
+                        criterias.Add(newCriteria);
+
+                    }
+                    if (errors.Count > 0)
+                    {
+                        return PartialView(errors);
+                    }
+                    db.Criteria.AddRange(criterias);
+                    db.SaveChanges();
+                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    errors.Add("Импорт критериев успешно завершен. Для отображения данных необходимо закрыть данное окно, после чего нажать клавишу 'F5'.");
+                }
+                else
+                {
+                    errors.Add("Загружен неверный формат документа. Должен быть формат .xlsx, а не " + ext);
+                    return PartialView(errors);
+                }
+
+            }
+            else
+            {
+                errors.Add("Не был выбран файл для импорта!");
+                return PartialView(errors);
+            }
+            return PartialView(errors);
+        }
+
 
         // POST: Attestations/Create
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 

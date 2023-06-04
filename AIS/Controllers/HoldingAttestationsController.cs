@@ -29,7 +29,7 @@ namespace AIS.Controllers
             public string name { get; set; }
         }
 
-        private AISEntities db = new AISEntities();
+        private readonly AISEntities db = new AISEntities();
         public static Attestation holdingAttestations;
         private static List<Criteria> criterias;
         private static List<Student> studentList;
@@ -46,15 +46,22 @@ namespace AIS.Controllers
             }
 
             holdingAttestations = db.Attestation.Find(id); //Получение текущей аттестации
-            studentList = db.Student.Where(s => s.IdGroup == holdingAttestations.IdGroup && !db.Vedomosti.Select(v => v.IdStudent).Contains(s.IdStudent)).ToList(); // Получение списка студентов группы
-                                                                                                                                                                    // проходящую текущую аттестацию
+
+
+            var listVed = db.Vedomosti.Where(v => v.IdAttestation == holdingAttestations.IdAttestation).ToList();
+            var studcurentlist  = db.Student.Where(s => s.IdGroup == holdingAttestations.IdGroup).ToList();
+            var listIdStud = listVed.Select(s => s.IdStudent);
+
+            studentList = studcurentlist.Where(s => !listIdStud.Contains(s.IdStudent)).ToList();                                                                        // Получение списка студентов группы
+                                                                                                                                                                        // проходящую текущую аттестацию
+
 
             criterias = db.Criteria.Where(c => c.IdAttestation == holdingAttestations.IdAttestation).ToList(); // Получение списка криетриев по аттестации
 
             decimal countPoint = 0;
             foreach (var crt in criterias) // Расчет общего количества баллов за все критерии дисциплины
             {
-                countPoint = countPoint + Convert.ToDecimal(crt.NumberOfPionts);
+                countPoint += Convert.ToDecimal(crt.NumberOfPionts);
             }
 
             maxPointDiscipline = countPoint;
@@ -114,12 +121,10 @@ namespace AIS.Controllers
 
                         decimal maxPoint = Convert.ToDecimal(criteria.NumberOfPionts);
                         decimal pointForCriteria = 0;
-                        decimal withdrawPerc = 0;
-                        decimal removePoint;
 
 
                         //Проверка на возможность конвертировать Проценты снятия и Баллы снятия за ошибки
-                        if ((Decimal.TryParse(criteria.WithdrawPercent.Trim(), out withdrawPerc) && decimal.TryParse(criteria.RemoveAPoint.Trim(), out removePoint)))
+                        if (decimal.TryParse(criteria.WithdrawPercent.Trim(), out decimal withdrawPerc) && decimal.TryParse(criteria.RemoveAPoint.Trim(), out decimal removePoint))
                         {
                             if (withdrawPerc == 0 && removePoint == 0) //Если процент снятия и балл снятия равны 0, то в результат студента за критерий устанавливается максимальный балл
                             {
@@ -158,7 +163,7 @@ namespace AIS.Controllers
             decimal maxPointStudent = 0;
             foreach (var stdRes in studentResults) //Расчет итогового балла студента за все принятые критерии
             {
-                maxPointStudent = maxPointStudent + Convert.ToDecimal(stdRes.NumberOfPointsForCriteria.Trim(), new NumberFormatInfo() { NumberDecimalSeparator = "," });
+                maxPointStudent += Convert.ToDecimal(stdRes.NumberOfPointsForCriteria.Trim(), new NumberFormatInfo() { NumberDecimalSeparator = "," });
             }
 
             Vedomosti vedomosti = new Vedomosti();

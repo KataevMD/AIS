@@ -130,12 +130,24 @@
                     }
                     @{
                         i = 0;
+
+
                     }
 
                 </tbody>
             </table>
-            <input id="saveResult" class="btn btn-outline-secondary" type="submit" value="Внести результаты студента" />
+            if (Model.Students.Count() != 0)
+            {
+                <input id="saveResult" class="btn btn-outline-secondary" type="submit" value="Внести результаты студента" />
+            }
+
         }
         @Html.ActionLink("Завершить аттестацию", "BlockAttestations", "Attestations", new { idAttestations = Model.Attestations.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm", @hidden = "true", @id = "AttestationComplited" })
+
+        @if (Model.Students.Count() == 0)
+        {
+            @Html.ActionLink("Завершить аттестацию", "BlockAttestations", "Attestations", new { idAttestations = Model.Attestations.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm", @id = "AttestationComplited" })
+        }
+
     </div>
 </div>

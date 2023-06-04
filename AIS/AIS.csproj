@@ -337,6 +337,7 @@
     <Content Include="Views\Attestations\Edit.cshtml" />
     <Content Include="Views\Attestations\Index.cshtml" />
     <Content Include="Views\Attestations\ImportAttestation.cshtml" />
+    <Content Include="Views\Attestations\ImportCriterias.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,9 @@
+﻿@model List<String>
+@{
+    int i = 1;
+    foreach (string s in Model)
+    {
+        <p class="text-break" style="margin-bottom: 0;">@i @s</p>i++;
+    }
+
+}
