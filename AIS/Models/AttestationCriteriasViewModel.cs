@@ -12,5 +12,7 @@ namespace AIS.Models
         public IEnumerable<Criteria> Criterias { get; set; }
         public IEnumerable<Discipline> Disciplines { get; set; }
         public IEnumerable<Group> Groups { get; set; }
+
+        public int countVedomisti { get; set; }
     }
 }

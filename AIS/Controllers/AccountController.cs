@@ -34,7 +34,6 @@ namespace AIS.Controllers
         {
             try
             {
-
                 var ctx = Request.GetOwinContext();
                 var authenticationManager = ctx.Authentication;//Получение текущего менеджера аутентификации
                 authenticationManager.SignOut();// Очистка файлов куки и очистка данных авторизованного пользователя

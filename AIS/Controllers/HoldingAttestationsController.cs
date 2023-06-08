@@ -46,36 +46,26 @@ namespace AIS.Controllers
             }
 
             holdingAttestations = db.Attestation.Find(id); //Получение текущей аттестации
-
-
             var listVed = db.Vedomosti.Where(v => v.IdAttestation == holdingAttestations.IdAttestation).ToList();
             var studcurentlist  = db.Student.Where(s => s.IdGroup == holdingAttestations.IdGroup).ToList();
             var listIdStud = listVed.Select(s => s.IdStudent);
-
             studentList = studcurentlist.Where(s => !listIdStud.Contains(s.IdStudent)).ToList();                                                                        // Получение списка студентов группы
                                                                                                                                                                         // проходящую текущую аттестацию
-
-
-            criterias = db.Criteria.Where(c => c.IdAttestation == holdingAttestations.IdAttestation).ToList(); // Получение списка криетриев по аттестации
-
+            criterias = db.Criteria.Where(c => c.IdAttestation == holdingAttestations.IdAttestation && c.Deleted != true).ToList(); // Получение списка криетриев по аттестации
             decimal countPoint = 0;
             foreach (var crt in criterias) // Расчет общего количества баллов за все критерии дисциплины
             {
                 countPoint += Convert.ToDecimal(crt.NumberOfPionts);
             }
-
             maxPointDiscipline = countPoint;
             transferringPoints = db.ProcedureForTransferringPoints.ToList();
-
             AttestationStudentViewModel asvm = new AttestationStudentViewModel { Attestations = holdingAttestations, Students = studentList, Criterias = criterias }; // Объект для передачи данных в представление
-
             return View(asvm);
         }
 
         [HttpPost]
         public ActionResult GetStudent(int? idStudent) // Запрос на выбор студента для оценивания
         {
-            //student = null;
             student = db.Student.Find(idStudent);
             if (student != null)
                 return PartialView(student);
@@ -85,15 +75,20 @@ namespace AIS.Controllers
         /// <summary>
         /// Сохранение результатов студента 
         /// </summary>
-        /// <param name="dataGets">Принимается из представления HoldingAttestation. Хранит информацию об принятых и непринятых криетриях и количестве допушеных ошибок.</param>
+        /// <param name="dataGets">Принимается из представления HoldingAttestation.
+        /// Хранит информацию об принятых и непринятых криетриях и 
+        /// количестве допушеных ошибок.</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SaveResult(DataGetTrue[] dataGets) //Запрос на сохранение результатов студента за аттестацию по текущей дисциплине
+        public JsonResult SaveResult(DataGetTrue[] dataGets) //Запрос на сохранение результатов
+                                                             //студента за аттестацию по
+                                                             //текущей дисциплине
         {
             Responce responce = new Responce();
             List<StudentResult> studentResults = new List<StudentResult>();
-
-            if (student == null) //Если студент не был выбран, то на клиент отправялется ответ с информацией о невыбранном студенте
+            if (student == null) //Если студент не был выбран, то на
+                                 //клиент отправялется ответ с
+                                 //информацией о невыбранном студенте
             {
                 responce.name = "StudentNotFound";
                 responce.id = 0;
@@ -101,12 +96,12 @@ namespace AIS.Controllers
             }
             else //Иначе если студент был выбран
             {
-
                 int i = 0;
-
-                foreach (var data in dataGets) //Перебор полученных данных о принятых и непринятых критериях
+                foreach (var data in dataGets) //Перебор полученных данных
+                                               //о принятых и непринятых критериях
                 {
-                    if (!data.Accepted) // Если критерий не принят, то переход к следующему криетрию
+                    if (!data.Accepted) // Если критерий не принят,
+                                        // то переход к следующему криетрию
                     {
                         i++;
                         continue;
@@ -115,22 +110,27 @@ namespace AIS.Controllers
                     {
                         Criteria criteria = criterias[i];
                         StudentResult studentResult = new StudentResult();
-
                         studentResult.IdStudent = student.IdStudent;
                         studentResult.IdCriteria = criteria.IdCriteria;
 
                         decimal maxPoint = Convert.ToDecimal(criteria.NumberOfPionts);
                         decimal pointForCriteria = 0;
 
-
-                        //Проверка на возможность конвертировать Проценты снятия и Баллы снятия за ошибки
-                        if (decimal.TryParse(criteria.WithdrawPercent.Trim(), out decimal withdrawPerc) && decimal.TryParse(criteria.RemoveAPoint.Trim(), out decimal removePoint))
+                        //Проверка на возможность конвертировать
+                        //Проценты снятия и Баллы снятия за ошибки
+                        if (decimal.TryParse(criteria.WithdrawPercent.Trim(), 
+                            out decimal withdrawPerc)
+                            && decimal.TryParse(criteria.RemoveAPoint.Trim(), 
+                            out decimal removePoint))
                         {
-                            if (withdrawPerc == 0 && removePoint == 0) //Если процент снятия и балл снятия равны 0, то в результат студента за критерий устанавливается максимальный балл
+                            if (withdrawPerc == 0 && removePoint == 0) //Если процент снятия и балл снятия равны 0,
+                                                                       //то в результат студента за
+                                                                       //критерий устанавливается максимальный балл
                             {
                                 pointForCriteria = maxPoint;
                             }
-                            if (withdrawPerc > 0) // если доступны Проценты снятия, то происходит перерасчет максимального балла критерия в балл с учетом допушенных ошибок,
+                            if (withdrawPerc > 0) // если доступны Проценты снятия, то происходит перерасчет
+                                                  // максимального балла критерия в балл с учетом допушенных ошибок,
                                                   // и записывается в резульат студента за криетрий
                             {
                                 var per = withdrawPerc / 100;
@@ -140,7 +140,8 @@ namespace AIS.Controllers
                                     pointForCriteria = 0;
                                 }
                             }
-                            if (removePoint > 0) // Так же как и для Процента снятия, происходит перерасчет для Балла снятия
+                            if (removePoint > 0) // Так же как и для Процента снятия,
+                                                 // происходит перерасчет для Балла снятия
                             {
                                 pointForCriteria = maxPoint - (removePoint * data.Point);
                                 if (pointForCriteria < 0)
@@ -155,17 +156,15 @@ namespace AIS.Controllers
                         db.SaveChanges();
                     }
                     i++;
-                }
-
-                
+                }               
             }
-
             decimal maxPointStudent = 0;
-            foreach (var stdRes in studentResults) //Расчет итогового балла студента за все принятые критерии
+            foreach (var stdRes in studentResults) //Расчет итогового балла
+                                                   //студента за все принятые критерии
             {
-                maxPointStudent += Convert.ToDecimal(stdRes.NumberOfPointsForCriteria.Trim(), new NumberFormatInfo() { NumberDecimalSeparator = "," });
+                maxPointStudent += Convert.ToDecimal(stdRes.NumberOfPointsForCriteria.Trim(), 
+                    new NumberFormatInfo() { NumberDecimalSeparator = "," });
             }
-
             Vedomosti vedomosti = new Vedomosti();
             vedomosti.IdAttestation = holdingAttestations.IdAttestation;
             vedomosti.IdStudent = student.IdStudent;
@@ -176,38 +175,44 @@ namespace AIS.Controllers
             {
                 vedomosti.FinalGrade = "2";
             }
-            else //Перевод оценки из 100 бальной системы в 5-ти бальную с учетом процентностного соотношения
+            else //Перевод оценки из 100
+                 //бальной системы в
+                 //5-ти бальную с учетом
+                 //процентностного соотношения
             {
                 decimal coeff = maxPointDiscipline / maxPointStudent;
                 decimal percent = 100 / coeff;
 
                 if (percent >= decimal.Parse(transferringPoints[3].MinPercents))
                     vedomosti.FinalGrade = "5";
-                if (percent <= decimal.Parse(transferringPoints[2].MaxPersents) && percent >= decimal.Parse(transferringPoints[2].MinPercents))
+                if (percent <= decimal.Parse(transferringPoints[2].MaxPersents)
+                    && percent >= decimal.Parse(transferringPoints[2].MinPercents))
                     vedomosti.FinalGrade = "4";
-                if (percent <= decimal.Parse(transferringPoints[1].MaxPersents) && percent >= decimal.Parse(transferringPoints[1].MinPercents))
+                if (percent <= decimal.Parse(transferringPoints[1].MaxPersents)
+                    && percent >= decimal.Parse(transferringPoints[1].MinPercents))
                     vedomosti.FinalGrade = "3";
                 if (percent <= decimal.Parse(transferringPoints[0].MaxPersents))
                     vedomosti.FinalGrade = "2";
             }
-
             db.Vedomosti.Add(vedomosti);
             db.SaveChanges();
+
             int idStud = student.IdStudent;
-            studentList.RemoveAll(s => s.IdStudent == idStud); //Удаление студента из списка проверки и выставления оценки
+            studentList.RemoveAll(s => s.IdStudent == idStud); //Удаление студента из
+                                                               //списка проверки и
+                                                               //выставления оценки
             vedomosti = null;
             student = null;
             studentResults = null;
-
-
             responce.name = "AddSucces";
             responce.id = idStud;
 
-            if (studentList.Count == 0) // Проверка на то, если всем студентам были выставлены оценки, то аттестация считается завершенной
+            if (studentList.Count == 0) // Проверка на то, если всем студентам
+                                        // были выставлены оценки, то аттестация
+                                        // считается завершенной
             {
                 responce.name = "AttestationComleted";
             }
-
             return Json(responce, JsonRequestBehavior.AllowGet);
         }
 

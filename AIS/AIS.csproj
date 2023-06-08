@@ -178,6 +178,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AttestationsController.cs" />
+    <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\HoldingAttestationsController.cs" />
     <Compile Include="Entities\Attestation.cs">
       <DependentUpon>Model.tt</DependentUpon>
@@ -338,6 +339,9 @@
     <Content Include="Views\Attestations\Index.cshtml" />
     <Content Include="Views\Attestations\ImportAttestation.cshtml" />
     <Content Include="Views\Attestations\ImportCriterias.cshtml" />
+    <Content Include="Views\Criteria\Create.cshtml" />
+    <Content Include="Views\Criteria\Delete.cshtml" />
+    <Content Include="Views\Criteria\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

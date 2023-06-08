@@ -73,7 +73,7 @@ namespace AIS.Controllers
                 IdCurentUser = idCurentUser,
                 TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title"),
                 Groups = new SelectList(group, "IdGroup", "Title"),
-                Disciplines = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title")
+                Disciplines = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title"),
             };
 
             return View(attestationListViewModel);
@@ -170,15 +170,14 @@ namespace AIS.Controllers
                     }
                 // имя нового файла ведомости
                 object newFile = HttpContext.Server.MapPath("~/FilesVedomosti/Group/Ведомость по " + attestation.Discipline.Title + " группы " + attestation.Group.Title + ".docx");
-
                 wordDoc.SaveAs2(newFile); //сохранить заполненный данными шаблон как новый документ
                 wordApp.ActiveDocument.Close(); //закрытие активного документа
                 wordApp?.Quit(); //отключение от приложения для работы с документами типа Word
 
-
             }
             catch (Exception ex)
             {
+                wordApp.ActiveDocument.Close(); //закрытие активного документа
                 wordApp?.Quit();
                 Console.WriteLine(ex.Message);
             }
@@ -328,7 +327,7 @@ namespace AIS.Controllers
             string fileType = "application/zip";
             // Имя файла - необязательно. Это то имя файла, которое будет задано скачиваемому файлу
             string file_name = $"{attestation.Discipline.Title} {attestation.EndDate:dd.MM.yyyy}.zip";
-    
+
             return File(pathFile, fileType, file_name); //отправка на клиент файла ведомости
 
         }
@@ -366,7 +365,7 @@ namespace AIS.Controllers
             var idCurentUser = Int32.Parse(User.Identity.GetUserId());
             var curentUser = db.Teachers.Find(idCurentUser);
 
-            var criteriasAttestaton = db.Criteria.Where(c => c.IdAttestation == attestation.IdAttestation);
+            var criteriasAttestaton = db.Criteria.Where(c => c.IdAttestation == attestation.IdAttestation && c.Deleted != true);
 
             var listOfDiscipline = db.DisciplineTeachers.Where(dis => dis.IdTeacher == idCurentUser).ToList();
 
@@ -374,14 +373,16 @@ namespace AIS.Controllers
             var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline));
 
             var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality);
-
+            var listVed = attestation.Vedomosti.ToList();
+                
 
             AttestationCriteriasViewModel attestationCriteriasViewModel = new AttestationCriteriasViewModel
             {
                 Attestations = attestation,
                 Criterias = criteriasAttestaton,
                 Disciplines = disciplineCurrentUser,
-                Groups = group
+                Groups = group,
+                countVedomisti = listVed.Count()
             };
 
 
@@ -444,16 +445,16 @@ namespace AIS.Controllers
                 // получаем имя файла
                 string fileName = Path.GetFileName(upload.FileName);
 
-
-                //Проверка на содержание файла ведомости по текущему экзамену
-                if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
-                {
-                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
-                }
-                int countError = 0;
                 string ext = Path.GetExtension(fileName);
                 if (ext == ".xlsx")
                 {
+                    //Проверка на содержание файла ведомости по текущему экзамену
+                    if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
+                    {
+                        System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    }
+                    int countError = 0;
+
                     // сохраняем файл в папку FilesImport в проекте
                     upload.SaveAs(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
 
@@ -505,8 +506,6 @@ namespace AIS.Controllers
                     string endDate = worksheet.Cells[3, 2].Value.ToString().Trim();
                     string titleGroup = worksheet.Cells[4, 2].Value.ToString().Trim();
                     string titleTypeAttestation = worksheet.Cells[5, 2].Value.ToString().Trim();
-
-
 
                     var discipline = db.Discipline.Where(d => d.Title == titleDiscipline).FirstOrDefault();
                     if (discipline == null)
@@ -691,16 +690,16 @@ namespace AIS.Controllers
             {
                 // получаем имя файла
                 string fileName = Path.GetFileName(upload.FileName);
-
-                //Проверка на содержание файла ведомости по текущему экзамену
-                if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
-                {
-                    System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
-                }
-                int countError = 0;
                 string ext = Path.GetExtension(fileName);
                 if (ext == ".xlsx")
                 {
+                    //Проверка на содержание файла ведомости по текущему экзамену
+                    if (System.IO.File.Exists(HttpContext.Server.MapPath("~/FilesImport/" + fileName)))
+                    {
+                        System.IO.File.Delete(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
+                    }
+                    int countError = 0;
+
                     // сохраняем файл в папку FilesImport в проекте
                     upload.SaveAs(HttpContext.Server.MapPath("~/FilesImport/" + fileName));
 
@@ -890,6 +889,20 @@ namespace AIS.Controllers
             db.Entry(attestation).State = EntityState.Modified;
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public ActionResult DeleteAllCriteria(int? idAttestation)
+        {
+            var listCriteria = db.Criteria.Where(c => c.IdAttestation == idAttestation && c.Deleted != true);
+
+            foreach (Criteria crt in listCriteria)
+            {
+                crt.Deleted = true;
+                db.Entry(crt).State = EntityState.Modified;
+            }
+            
+            db.SaveChanges();
+            return RedirectToAction("Edit", "Attestations", new { id = idAttestation });
         }
 
         protected override void Dispose(bool disposing)

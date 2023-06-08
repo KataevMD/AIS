@@ -6,7 +6,7 @@
     ViewBag.Title = "Index";
 }
 <!-- Модальное окно -->
-<div class="modal fade " id="staticBackdrop"  tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade " id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -15,7 +15,7 @@
             </div>
             <div class="modal-body">
                 <h3>Выберите файл для импорта</h3>
-                @using (Ajax.BeginForm("ImportAttestation", "Attestations", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result"}, new { enctype = "multipart/form-data" }))
+                @using (Ajax.BeginForm("ImportAttestation", "Attestations", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { enctype = "multipart/form-data" }))
                 {
                     <div class="row">
                         <label for="formFileLg" class="form-label">Скачать шаблон можно по ссылке: @Html.ActionLink("Шаблон файла импорта", "Index", "Home")</label>
@@ -135,25 +135,35 @@
                     <td>
                         @Html.ActionLink("Сформировать ведомость по каждому студенту", "GetAttestationVedomostStudent", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
                     </td>
-                    
+
                 }
                 else
                 {
                     if (User.IsInRole("Преподаватель") && item.IdTeachers == Model.IdCurentUser) // Проверка на то, что начать аттестацию может только преподаватель, который закреплен за данной аттестацией
                     {
-                        <td>
-                            @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
-                        </td>
+                        if (item.Vedomosti.Count() == 0)
+                        {
+                            <td>
+                                @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-success btn-sm" })
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.ActionLink("Продолжить оценивание", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-success btn-sm" })
+                            </td>
+                        }
+
                     }
                     else
                     {
                         <td></td>
                     }
                     <td>
-                        @Html.ActionLink("Редактировать", "Edit", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                        @Html.ActionLink("Редактировать", "Edit", new { id = item.IdAttestation }, new { @class = "btn btn-outline-primary btn-sm" })
                     </td>
                     <td>
-                        @Html.ActionLink("Удалить", "Delete", new { id = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                        @Html.ActionLink("Удалить", "Delete", new { id = item.IdAttestation }, new { @class = "btn btn-outline-danger btn-sm" })
                     </td>
                 }
             }
