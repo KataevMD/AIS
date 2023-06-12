@@ -60,8 +60,8 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
-                string hashPassword = Models.HashPassword.GetHashPAssword(model.Password);
-                var findUsers = dbConnection.Teachers.Where(t => t.Login == model.Login && t.Password == hashPassword).FirstOrDefault(); //Поиск записи в БД по логину и паролю
+                
+                var findUsers = dbConnection.Teachers.Where(t => t.Login == model.Login && t.Password == model.Password).FirstOrDefault(); //Поиск записи в БД по логину и паролю
                 if (findUsers != null)
                 {
                     this.SignInUser(findUsers, true);

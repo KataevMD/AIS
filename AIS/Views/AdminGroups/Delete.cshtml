@@ -4,15 +4,15 @@
     ViewBag.Title = "Delete";
 }
 
-<h2>Delete</h2>
+<h2>Удаление информации об учебной группе</h2>
 
-<h3>Are you sure you want to delete this?</h3>
+<h4>Вы точно хотите удалить информацию о данной учебной группе?</h4>
 <div>
-    <h4>Group</h4>
+    <h5>Группа: @Model.Title</h5>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Title)
+            Наименование учебной группы
         </dt>
 
         <dd>
@@ -20,7 +20,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.CourseNumber)
+            Номер курса
         </dt>
 
         <dd>
@@ -28,7 +28,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Speciality.Title)
+            Специальность
         </dt>
 
         <dd>
@@ -37,12 +37,13 @@
 
     </dl>
 
-    @using (Html.BeginForm()) {
+    @using (Html.BeginForm())
+    {
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            @Html.ActionLink("Назад", "Index", new { }, new { @class = "btn btn-outline-secondary" }) |
+            <input type="submit" value="Удалить" class="btn btn-danger" />
         </div>
     }
 </div>

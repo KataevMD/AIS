@@ -36,7 +36,7 @@
 </div>
 <hr />
 <p>
-    @Html.ActionLink("Добавить новую аттестацию", "Create", new { }, new { @class = "btn btn-secondary" })
+    @Html.ActionLink("Добавить новую аттестацию", "Create", new { }, new { @class = "btn btn-outline-success" })
 
     <!-- Кнопка-триггер модального окна -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
@@ -147,7 +147,7 @@
                         if (item.Vedomosti.Count() == 0)
                         {
                             <td>
-                                @Html.ActionLink("Начать", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-success btn-sm" })
+                                @Html.ActionLink("Начать аттестацию", "Index", "HoldingAttestations", new { id = item.IdAttestation }, new { @class = "btn btn-outline-success btn-sm" })
                             </td>
                         }
                         else

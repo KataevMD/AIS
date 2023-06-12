@@ -4,7 +4,8 @@
 @{
     ViewBag.Title = "AdmAttastations";
 }
-
+<h2>Управление данными аттестаций</h2>
+<br />
 <form method="get">
     <div class="form-inline">
         <label class="control-label">Тип аттестации: </label>
@@ -65,7 +66,7 @@
             <td>
                 @Html.ActionLink("Удалить", "DeleteConfirmed", new { id = item.IdAttestation }, new { @class = "btn btn-outline-danger btn-sm" })
             </td>
-            
+
         </tr>
     }
 </table>

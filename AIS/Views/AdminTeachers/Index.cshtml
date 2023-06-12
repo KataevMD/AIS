@@ -4,41 +4,39 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
-
+<h2>Управление данными преподавателей</h2>
+<br />
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Добавить нового преподавателя", "Create", new { }, new { @class = "btn btn-success" })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.LastName)
+            Фамилия
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FirstName)
+            Имя
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Patronymic)
+            Отчество
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            Email
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Login)
+            Логин
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Password)
+            Специальность
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Speciality.Title)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StatusTeacher.Title)
+            Статус
         </th>
         <th></th>
+        <th></th>
     </tr>
-
-@foreach (var item in Model) {
+@foreach (var item in Model) 
+{
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.LastName)
@@ -56,18 +54,16 @@
             @Html.DisplayFor(modelItem => item.Login)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Password)
-        </td>
-        <td>
             @Html.DisplayFor(modelItem => item.Speciality.Title)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.StatusTeacher.Title)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.IdTeachers }) |
-            @Html.ActionLink("Details", "Details", new { id=item.IdTeachers }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.IdTeachers })
+            @Html.ActionLink("Редактировать", "Edit", new { id = item.IdTeachers }, new { @class = "btn btn-outline-primary btn-sm" })
+        </td>
+        <td>
+            @Html.ActionLink("Удалить", "Delete", new { id = item.IdTeachers }, new { @class = "btn btn-outline-danger btn-sm" })
         </td>
     </tr>
 }

@@ -53,6 +53,8 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
+               
+                teachers.IdStatusTeachers = 3;
                 db.Teachers.Add(teachers);
                 db.SaveChanges();
                 return RedirectToAction("Index");
