@@ -46,11 +46,14 @@ namespace AIS.Controllers
             }
 
             holdingAttestations = db.Attestation.Find(id); //Получение текущей аттестации
+
             var listVed = db.Vedomosti.Where(v => v.IdAttestation == holdingAttestations.IdAttestation).ToList();
             var studcurentlist  = db.Student.Where(s => s.IdGroup == holdingAttestations.IdGroup).ToList();
+
             var listIdStud = listVed.Select(s => s.IdStudent);
-            studentList = studcurentlist.Where(s => !listIdStud.Contains(s.IdStudent)).ToList();                                                                        // Получение списка студентов группы
-                                                                                                                                                                        // проходящую текущую аттестацию
+            studentList = studcurentlist.Where(s => !listIdStud.Contains(s.IdStudent)).ToList();    // Получение списка студентов группы
+                                                                                                    // проходящую текущую аттестацию
+
             criterias = db.Criteria.Where(c => c.IdAttestation == holdingAttestations.IdAttestation && c.Deleted != true).ToList(); // Получение списка криетриев по аттестации
             decimal countPoint = 0;
             foreach (var crt in criterias) // Расчет общего количества баллов за все критерии дисциплины

@@ -27,5 +27,19 @@ namespace AIS.Models
 
             return View();
         }
+
+        public ActionResult GetTemplateImportAttestation()
+        {
+           
+
+            return View();
+        }
+
+        public ActionResult GetGuideUsers()
+        {
+
+
+            return View();
+        }
     }
 }

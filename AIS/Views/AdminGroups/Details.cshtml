@@ -1,0 +1,42 @@
+﻿@model AIS.Entities.Group
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Group</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CourseNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourseNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Speciality.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Speciality.Title)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IdGroup }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

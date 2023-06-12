@@ -128,12 +128,15 @@
             @{
                 if (item.Сompleted != null && item.Сompleted == true) //Если аттестация завершена, то выводится кнопка на формирование ведомости
                 {
-                    <td />
+                    
                     <td>
                         @Html.ActionLink("Сформировать ведомость по группе", "GetAttestationVedomost", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
                     </td>
                     <td>
                         @Html.ActionLink("Сформировать ведомость по каждому студенту", "GetAttestationVedomostStudent", new { idAttestations = item.IdAttestation }, new { @class = "btn btn-outline-secondary btn-sm" })
+                    </td>
+                    <td>
+                        @Html.ActionLink("Удалить", "Delete", new { id = item.IdAttestation }, new { @class = "btn btn-outline-danger btn-sm" })
                     </td>
 
                 }

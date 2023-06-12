@@ -23,7 +23,7 @@ namespace AIS
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
                 LogoutPath = new PathString("/Account/LogOff"),
-                ExpireTimeSpan = TimeSpan.FromMinutes(5.0)
+                ExpireTimeSpan = TimeSpan.FromMinutes(60.0)
             });
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 

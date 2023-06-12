@@ -1,0 +1,82 @@
+﻿@model AIS.Entities.Student
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Student</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Patronymic)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Patronymic)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Telephone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Telephone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IdSpeciality)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IdSpeciality)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Group.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Group.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StatusStudent.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StatusStudent.Title)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IdStudent }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -25,8 +25,6 @@ namespace AIS.Controllers
         {
         }
 
-
-
         //
         // GET: /Account/Login
         [AllowAnonymous]

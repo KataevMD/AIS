@@ -568,7 +568,10 @@ namespace AIS.Controllers
                     {
                         Criteria newCriteria = new Criteria();
                         newCriteria.IdAttestation = attestation.IdAttestation;
-
+                        if (worksheet.Cells[i, 1].Value != null && worksheet.Cells[i, 1].Value.ToString() == "Итого:")
+                        {
+                            break;
+                        }
                         if (worksheet.Cells[i, 1].Value != null)
                         {
                             newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
@@ -723,7 +726,10 @@ namespace AIS.Controllers
                     {
                         Criteria newCriteria = new Criteria();
                         newCriteria.IdAttestation = IdAttestation;
-
+                        if (worksheet.Cells[i, 1].Value != null && worksheet.Cells[i, 1].Value.ToString() == "Итого:")
+                        {
+                            break;
+                        }
                         if (worksheet.Cells[i, 1].Value != null)
                         {
                             newCriteria.Title = worksheet.Cells[i, 1].Value.ToString();
