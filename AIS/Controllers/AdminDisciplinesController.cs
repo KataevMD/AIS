@@ -110,8 +110,13 @@ namespace AIS.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Discipline discipline = db.Discipline.Find(id);
-            db.Discipline.Remove(discipline);
-            db.SaveChanges();
+            var countAttestationWithThisDiscipline = db.Attestation.Where(a => a.IdDiscipline == id).Count();
+            if (countAttestationWithThisDiscipline == 0)
+            {
+                db.Discipline.Remove(discipline);
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
             return RedirectToAction("Index");
         }
 

@@ -53,6 +53,10 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
+                var group = db.Group.Find(student.IdGroup);
+                student.IdSpeciality = group.IdSpeciality;
+                student.IdStatusStudent = 3;
+
                 db.Student.Add(student);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -89,6 +93,9 @@ namespace AIS.Controllers
         {
             if (ModelState.IsValid)
             {
+                var group = db.Group.Find(student.IdGroup);
+                student.IdSpeciality = group.IdSpeciality;
+
                 db.Entry(student).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

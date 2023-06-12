@@ -359,7 +359,6 @@
     <Content Include="Views\AdminGroups\Index.cshtml" />
     <Content Include="Views\AdminDisciplines\Create.cshtml" />
     <Content Include="Views\AdminDisciplines\Delete.cshtml" />
-    <Content Include="Views\AdminDisciplines\Details.cshtml" />
     <Content Include="Views\AdminDisciplines\Edit.cshtml" />
     <Content Include="Views\AdminDisciplines\Index.cshtml" />
     <Content Include="Views\AdminTeachers\Create.cshtml" />
@@ -368,7 +367,6 @@
     <Content Include="Views\AdminTeachers\Index.cshtml" />
     <Content Include="Views\AdminStudents\Create.cshtml" />
     <Content Include="Views\AdminStudents\Delete.cshtml" />
-    <Content Include="Views\AdminStudents\Details.cshtml" />
     <Content Include="Views\AdminStudents\Edit.cshtml" />
     <Content Include="Views\AdminStudents\Index.cshtml" />
   </ItemGroup>

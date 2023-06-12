@@ -4,17 +4,17 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Управление данными дисциплин</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Добавить новую дисциплину", "Create", new { }, new { @class = "btn btn-success" })
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Title)
+            Наименование дисциплины
         </th>
-        <th></th>
+        <th>Управление</th>
     </tr>
 
 @foreach (var item in Model) {
@@ -23,9 +23,8 @@
             @Html.DisplayFor(modelItem => item.Title)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.IdDiscipline }) |
-            @Html.ActionLink("Details", "Details", new { id=item.IdDiscipline }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.IdDiscipline })
+            @Html.ActionLink("Редактировать", "Edit", new { id=item.IdDiscipline }, new { @class = "btn btn-outline-primary btn-sm" }) |
+            @Html.ActionLink("Удалить", "Delete", new { id=item.IdDiscipline }, new { @class = "btn btn-outline-danger btn-sm" })
         </td>
     </tr>
 }
