@@ -1,0 +1,40 @@
+﻿@model IEnumerable<AIS.Entities.ProcedureForTransferringPoints>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Порядок перевода результатов аттестации в оценку</h2>
+<hr />
+<table class="table">
+    <tr>
+        <th class="text-center">
+            Оценка
+        </th>
+        <th class="text-center">
+            от (%)
+        </th>
+        <th class="text-center">
+            до (%)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr class="text-center">
+        <td>
+            @Html.DisplayFor(modelItem => item.FinalGrade)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MinPercents)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.MaxPersents)
+        </td>
+        <td>
+            @Html.ActionLink("Редактировать", "Edit", new { id = item.FinalGrade }, new { @class = "btn btn-outline-primary btn-sm" })
+        </td>
+    </tr>
+}
+
+</table>

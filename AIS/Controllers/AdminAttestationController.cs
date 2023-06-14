@@ -27,9 +27,7 @@ namespace AIS.Controllers
             var group = db.Group.ToList();
             group.Insert(0, new Group { Title = "Все", IdGroup = 0 });
 
-            var listOfDiscipline = db.DisciplineTeachers.ToList();
-            var listIdDiscipline = listOfDiscipline.Select(de => de.IdDiscipline);
-            var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline)).ToList();
+            var disciplineCurrentUser = db.Discipline.ToList();
             disciplineCurrentUser.Insert(0, new Discipline { Title = "Все", IdDiscipline = 0 });
 
             attestations = db.Attestation.Where(a => a.Deleted == true);

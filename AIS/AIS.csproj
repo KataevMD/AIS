@@ -189,6 +189,7 @@
     <Compile Include="Controllers\AttestationsController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\HoldingAttestationsController.cs" />
+    <Compile Include="Controllers\AdminProcedureForTransferringPointsController.cs" />
     <Compile Include="Entities\Attestation.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -338,7 +339,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
@@ -373,6 +373,9 @@
     <Content Include="Views\AdminStudents\Delete.cshtml" />
     <Content Include="Views\AdminStudents\Edit.cshtml" />
     <Content Include="Views\AdminStudents\Index.cshtml" />
+    <Content Include="Views\AdminProcedureForTransferringPoints\Edit.cshtml" />
+    <Content Include="Views\AdminProcedureForTransferringPoints\Index.cshtml" />
+    <Content Include="Views\Attestations\HeadOfAttestation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

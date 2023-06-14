@@ -45,7 +45,7 @@
             <hr />
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <input name="IdAttestation" value="@Model.Attestations.IdAttestation" readonly hidden />
-            <div class="form-group">
+            <div class="form-group row" style="padding-bottom: 20px">
                 @Html.LabelFor(model => model.Attestations.IdDiscipline, "Дисциплина", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
 
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group row" style="padding-bottom: 20px">
                 @Html.LabelFor(model => model.Attestations.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
 
@@ -78,7 +78,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group row" style="padding-bottom: 20px">
                 @Html.LabelFor(model => model.Attestations.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
@@ -89,7 +89,7 @@
                 </div>
             </div>
             <input name="IdTeachers" value="@Model.Attestations.IdTeachers" readonly hidden />
-            <div class="form-group">
+            <div class="form-group row" style="padding-bottom: 20px">
                 @Html.LabelFor(model => model.Attestations.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
 
@@ -110,7 +110,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group row" style="padding-bottom: 20px">
                 @Html.LabelFor(model => model.Attestations.IdTypeAttestation, "Вид аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
                     @Html.DropDownList("IdTypeAttestation", null, htmlAttributes: new { @class = "form-select" })
@@ -118,12 +118,16 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Обновить" class="btn btn-default" />
+            <div class="form-group row" style="padding-bottom: 20px">
+                <div class="col-md-offset-2 col-md-3">
+                    @Html.ActionLink("Назад", "Index", new { }, new { @class = "btn btn-outline-secondary" })
+                </div>
+                <div class="col-md-offset-2 col-md-4">
+                    <input type="submit" value="Обновить" class="btn btn-success" />
                 </div>
             </div>
         </div>
+        <br />
     }
 }
 else
@@ -131,14 +135,14 @@ else
     <div class="form-horizontal">
         <hr />
         <input name="IdAttestation" value="@Model.Attestations.IdAttestation" readonly hidden />
-        <div class="form-group">
+        <div class="form-group row" style="padding-bottom: 20px">
             @Html.LabelFor(model => model.Attestations.IdDiscipline, "Дисциплина", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <input class="form-control text-box single-line" id="IdDiscipline" value="@Model.Attestations.Discipline.Title" readonly />             
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group row" style="padding-bottom: 20px">
             @Html.LabelFor(model => model.Attestations.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
 
@@ -150,7 +154,7 @@ else
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group row" style="padding-bottom: 20px">
             @Html.LabelFor(model => model.Attestations.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <input class="form-control text-box single-line" data-val="true" data-val-date="Поле Дата начала аттестации должно содержать дату." data-val-required="Требуется поле Дата начала аттестации."
@@ -161,14 +165,14 @@ else
             </div>
         </div>
         <input name="IdTeachers" value="@Model.Attestations.IdTeachers" readonly hidden />
-        <div class="form-group">
+        <div class="form-group row" style="padding-bottom: 20px">
             @Html.LabelFor(model => model.Attestations.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <input class="form-control text-box single-line" id="IdGroup" value="@Model.Attestations.Group.Title" readonly/>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group row" style="padding-bottom: 20px">
             @Html.LabelFor(model => model.Attestations.IdTypeAttestation, "Вид аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 <input class="form-control text-box single-line" id="IdTypeAttestation" value="@Model.Attestations.TypeAttestation.Title" readonly/>
@@ -249,9 +253,7 @@ else
     }
 
 </table>
-<div>
-    @Html.ActionLink("Вернуться назад", "Index")
-</div>
+
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

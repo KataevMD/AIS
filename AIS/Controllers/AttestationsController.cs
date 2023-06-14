@@ -25,7 +25,7 @@ using Table = Microsoft.Office.Interop.Word.Table;
 namespace AIS.Controllers
 {
     // GET: Attestations
-    [Authorize(Roles = "Преподаватель,Администратор")]
+    [Authorize(Roles = "Преподаватель,Администратор, Заведующий отделением")]
     public class AttestationsController : Controller
     {
         private readonly AISEntities db = new AISEntities();
@@ -47,8 +47,53 @@ namespace AIS.Controllers
             var disciplineCurrentUser = db.Discipline.Where(dcu => listIdDiscipline.Contains(dcu.IdDiscipline)).ToList();
             disciplineCurrentUser.Insert(0, new Discipline { Title = "Все", IdDiscipline = 0 });
 
-
             attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.IdTeachers == idCurentUser && a.Deleted != true);
+
+
+            if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
+            {
+                attestations = attestations.Where(a => a.IdTypeAttestation == idTypeAttestation);
+            }
+
+            if (idGroup != null && idGroup != 0) // фильтрация аттестаций по типу
+            {
+                attestations = attestations.Where(a => a.IdGroup == idGroup);
+            }
+
+            if (idDiscipline != null && idDiscipline != 0) // фильтрация аттестаций по типу
+            {
+                attestations = attestations.Where(a => a.IdDiscipline == idDiscipline);
+            }
+
+
+            AttestationListViewModel attestationListViewModel = new AttestationListViewModel
+            {
+                Attestations = attestations,
+                IdCurentUser = idCurentUser,
+                TypeAttestations = new SelectList(typeAttestations, "IdTypeAttestation", "Title"),
+                Groups = new SelectList(group, "IdGroup", "Title"),
+                Disciplines = new SelectList(disciplineCurrentUser, "IdDiscipline", "Title"),
+            };
+
+            return View(attestationListViewModel);
+        }
+
+        public ActionResult HeadOfAttestation(int? idTypeAttestation, int? idGroup, int? idDiscipline) //Открытие страницы со списокм аттестаций, с подгрузкой данных в соответсвии с должностью пользователя
+        {
+            IEnumerable<Attestation> attestations;
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser);
+
+            var typeAttestations = db.TypeAttestation.ToList();
+            typeAttestations.Insert(0, new TypeAttestation { Title = "Все", IdTypeAttestation = 0 });
+
+            var group = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality).ToList();
+            group.Insert(0, new Group { Title = "Все", IdGroup = 0 });
+
+            var disciplineCurrentUser = db.Discipline.ToList();
+            disciplineCurrentUser.Insert(0, new Discipline { Title = "Все", IdDiscipline = 0 });
+
+            attestations = db.Attestation.Include(a => a.Group).Include(a => a.Discipline).Include(a => a.Teachers).Include(a => a.TypeAttestation).Where(a => a.Сompleted == true);
 
 
             if (idTypeAttestation != null && idTypeAttestation != 0) // фильтрация аттестаций по типу
@@ -837,7 +882,6 @@ namespace AIS.Controllers
             return PartialView(errors);
         }
 
-
         // POST: Attestations/Create
         // Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
         // сведения см. в разделе https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -867,8 +911,6 @@ namespace AIS.Controllers
             ViewBag.IdTypeAttestation = new SelectList(db.TypeAttestation, "IdTypeAttestation", "Title");
             return View(attestation);
         }
-
-
 
         // GET: Attestations/Delete/5
         public ActionResult Delete(int? id) // Запрос на удаление аттестации, открывает страницу с удалением аттестации

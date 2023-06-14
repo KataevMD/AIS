@@ -42,13 +42,13 @@
                                     <li>@Html.ActionLink("Управление студентами", "Index", "AdminStudents", new { area = "" }, new { @class = "dropdown-item" })</li>
                                     <li>@Html.ActionLink("Управление учебными группами", "Index", "AdminGroups", new { area = "" }, new { @class = "dropdown-item" })</li>
                                     <li>@Html.ActionLink("Управление дисциплинами", "Index", "AdminDisciplines", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                    
+                                    <li>@Html.ActionLink("Управление процедурой перевода баллов в оценку", "Index", "AdminProcedureForTransferringPoints", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 </ul>
                             </li>
                         }
                         @if (User.IsInRole("Заведующий отделением")) //Отображение разделов меню в зависимости от роли пользователя
                         {
-                            <li class="nav-item">Что то для зав. отделения</li>
+                            <li class="nav-item">@Html.ActionLink("Ведомости аттестаций", "HeadOfAttestation", "Attestations", new { area = "" }, new { @class = "nav-link" })</li>
                         }
                         @if (!User.IsInRole("Администратор"))
                         {

@@ -14,7 +14,7 @@
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom: 20px">
         @Html.LabelFor(model => model.IdDiscipline, "Дисциплина", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("IdDiscipline", null, htmlAttributes: new { @class = "form-select" })
@@ -22,10 +22,9 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom: 20px">
         @Html.LabelFor(model => model.StartDate, "Дата начала аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-
             <input class="form-control text-box single-line" data-val="true" data-val-date="Поле 'Дата начала аттестации' должно содержать дату." data-val-required="Требуется поле 'Дата начала аттестации'."
                    id="StartDate"
                    name="StartDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
@@ -34,7 +33,7 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom: 20px">
         @Html.LabelFor(model => model.EndDate, "Дата конца аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             <input class="form-control text-box single-line" data-val="true" data-val-date="Поле 'Дата конца аттестации' должно содержать дату." data-val-required="Требуется поле 'Дата конца аттестации'."
@@ -47,7 +46,7 @@
 
     <input hidden readonly value="@ViewBag.IdCurentUser" id="IdTeachers" name="IdTeachers" />
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom: 20px">
         @Html.LabelFor(model => model.IdGroup, "Группа", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("IdGroup", null, htmlAttributes: new { @class = "form-select" })
@@ -55,22 +54,20 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group row" style="padding-bottom: 20px">
         @Html.LabelFor(model => model.IdTypeAttestation, "Тип аттестации", htmlAttributes: new { @class = "control-label col-md-2" })
         <div class="col-md-10">
             @Html.DropDownList("IdTypeAttestation", null, htmlAttributes: new { @class = "form-select" })
             @Html.ValidationMessageFor(model => model.IdTypeAttestation, "", new { @class = "text-danger" })
         </div>
     </div>
-
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Создать" class="btn btn-default" />
+    <div class="form-group row" style="padding-bottom: 20px">
+        <div class="col-md-offset-2 col-md-4">
+            @Html.ActionLink("Назад", "Index", new { }, new { @class = "btn btn-outline-secondary" })
+        </div>
+        <div class="col-md-offset-2 col-md-2">
+            <input type="submit" value="Сохранить" class="btn btn-success" />
         </div>
     </div>
 </div>
 }
-
-<div>
-    @Html.ActionLink("Вернуться назад", "Index")
-</div>

@@ -65,7 +65,13 @@ namespace AIS.Controllers
                 if (findUsers != null)
                 {
                     this.SignInUser(findUsers, true);
-                    return this.RedirectToLocal("/Attestations/Index"); //Перенеаправление авторизованного пользователя на страницу аттестаций
+                    var role = findUsers.Role.ToList();
+                    if (role[0].Title == "Администратор")
+                        return this.RedirectToLocal("/AdminAttestation/AdmAttestations"); //Перенеаправление авторизованного пользователя на страницу аттестаций
+                    if(role[0].Title == "Заведующий отделением")
+                        return this.RedirectToLocal("/Attestations/HeadOfAttestation");
+                    if (role[0].Title == "Преподаватель")
+                        return this.RedirectToLocal("/Attestations/Index");
                 }
                 else { ModelState.AddModelError(string.Empty, "Некорректные логин или пароль."); }
             }

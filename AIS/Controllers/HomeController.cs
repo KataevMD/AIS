@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Interop.Word;
 using System.Diagnostics;
+using Microsoft.AspNet.Identity;
 
 namespace AIS.Models
 {
@@ -19,13 +20,6 @@ namespace AIS.Models
         }
         [Authorize(Roles = "Администратор")]
         [Authorize(Roles = "Преподаватель")]
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
@@ -35,6 +29,8 @@ namespace AIS.Models
 
         public ActionResult GetTemplateImportAttestation()
         {
+            var idCurentUser = Int32.Parse(User.Identity.GetUserId());
+            var curentUser = db.Teachers.Find(idCurentUser);
 
             Microsoft.Office.Interop.Excel.Application excelApp = null;
             Workbook excelDoc = null;
@@ -49,27 +45,47 @@ namespace AIS.Models
                 string fileName = HttpContext.Server.MapPath("~/MainTemplates/Шаблон для импорта криетриев.xlsx"); //Путь к шаблону ведомости
                 excelDoc = excelApp.Workbooks.Open(fileName); //открываем шаблон ведомости
 
-                var listDiscipline = db.Discipline.ToList();
-                var listGroups = db.Group.ToList();
+                var listDiscipline = curentUser.DisciplineTeachers.Where(dt => dt.IdTeacher == idCurentUser).ToList();
+
+                //var listDiscipline = db.Discipline.Where(d => d.DisciplineTeachers.).ToList();
+                var listGroups = db.Group.Where(g => g.IdSpeciality == curentUser.IdSpeciality).ToList();
                 var listTypeAttestation = db.TypeAttestation.ToList();
 
                 worksheetDiscipline = excelDoc.Worksheets[2];
                 worksheetGroups = excelDoc.Worksheets[3];
                 worksheetTypeAttestation = excelDoc.Worksheets[4];
 
-                for (int i = 1; i < listDiscipline.Count; i++)
+                for (int i = 1; i < 300; i++)
                 {
-                    worksheetDiscipline.Cells[i + 1, 1].Value = i;
-                    worksheetDiscipline.Cells[i + 1, 2].Value = listDiscipline[i - 1].Title;
+                    worksheetDiscipline.Cells[i + 1, 1].Value = "";
+                    worksheetDiscipline.Cells[i + 1, 2].Value = "";
                 }
 
-                for (int i = 1; i < listGroups.Count; i++)
+                for (int i = 1; i < 300; i++)
+                {
+                    worksheetGroups.Cells[i + 1, 1].Value = "";
+                    worksheetGroups.Cells[i + 1, 2].Value = "";
+                }
+
+                for (int i = 1; i < 300; i++)
+                {
+                    worksheetTypeAttestation.Cells[i + 1, 1].Value = "";
+                    worksheetTypeAttestation.Cells[i + 1, 2].Value = "";
+                }
+
+                for (int i = 1; i <= listDiscipline.Count; i++)
+                {
+                    worksheetDiscipline.Cells[i + 1, 1].Value = i;
+                    worksheetDiscipline.Cells[i + 1, 2].Value = listDiscipline[i - 1].Discipline.Title;
+                }
+
+                for (int i = 1; i <= listGroups.Count; i++)
                 {
                     worksheetGroups.Cells[i + 1, 1].Value = i;
                     worksheetGroups.Cells[i + 1, 2].Value = listGroups[i - 1].Title;
                 }
 
-                for (int i = 1; i < listTypeAttestation.Count; i++)
+                for (int i = 1; i <= listTypeAttestation.Count; i++)
                 {
                     worksheetTypeAttestation.Cells[i + 1, 1].Value = i;
                     worksheetTypeAttestation.Cells[i + 1, 2].Value = listTypeAttestation[i - 1].Title;
@@ -126,6 +142,14 @@ namespace AIS.Models
                 proc.Kill();
             }
 
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
